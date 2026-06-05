@@ -53,3 +53,30 @@ tasks:
     - go mod tidy
     - echo 'Verifying dependencies...'
     - go mod verify
+
+# Docker tasks start
+
+  docker:up-dev:
+    desc: Start all services
+    cmds:
+      - echo 'Starting services for dev...'
+      - docker compose -f docker-compose.dev.yml up -d
+
+  docker:down-dev:
+    desc: Stop all services
+    cmds:
+      - echo 'Stopping services for dev...'
+      - docker compose -f docker-compose.dev.yml down
+
+  docker:logs-dev:
+    desc: View logs
+    cmds:
+      - docker compose -f docker-compose.dev.yml logs -f
+
+  docker:rebuild-dev:
+    desc: Rebuild and start all services
+    cmds:
+      - echo 'Rebuilding and starting services for dev...'
+      - docker compose -f docker-compose.dev.yml up -d --build
+
+# Docker tasks end
