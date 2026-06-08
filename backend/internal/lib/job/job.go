@@ -1,7 +1,7 @@
 package job
 
 import (
-	"github.com/Adedunmol/go-boilerplate/internal/config"
+	"github.com/Adedunmol/glimpse/internal/config"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog"
 )

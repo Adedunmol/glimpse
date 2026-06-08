@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Adedunmol/go-boilerplate/internal/server"
+	"github.com/Adedunmol/glimpse/internal/server"
 
 	"github.com/labstack/echo/v4"
 )
