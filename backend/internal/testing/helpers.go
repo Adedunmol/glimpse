@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Adedunmol/go-boilerplate/internal/server"
+	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
