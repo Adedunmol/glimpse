@@ -11,11 +11,16 @@ type BaseWithId struct {
 }
 
 type BaseWithCreatedAt struct {
-	CreatedAt time.Time `json:"createdAt" db:"created_at"`
+	CreatedAt *time.Time `json:"createdAt" db:"created_at"`
 }
 
 type BaseWithUpdatedAt struct {
-	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+	UpdatedAt *time.Time `json:"updatedAt" db:"updated_at"`
+}
+
+type BaseWithTimeStamp struct {
+	BaseWithUpdatedAt
+	BaseWithCreatedAt
 }
 
 type Base struct {

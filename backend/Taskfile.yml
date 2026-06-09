@@ -60,13 +60,19 @@ tasks:
     desc: Start all services
     cmds:
       - echo 'Starting services for dev...'
-      - docker compose -f docker-compose.dev.yml up --build
+      - docker compose -f docker-compose.dev.yml up
 
   docker:down-dev:
     desc: Stop all services
     cmds:
       - echo 'Stopping services for dev...'
       - docker compose -f docker-compose.dev.yml down
+
+  docker:clean-dev:
+    desc: Stops all services and cleans volumes
+    cmds:
+      - echo 'Removing volumes...'
+      - docker compose -f docker-compose.dev.yml down -v
 
   docker:logs-dev:
     desc: View logs
@@ -77,6 +83,6 @@ tasks:
     desc: Rebuild and start all services
     cmds:
       - echo 'Rebuilding and starting services for dev...'
-      - docker compose -f docker-compose.dev.yml up -d --build
+      - docker compose -f docker-compose.dev.yml up  --build
 
 # Docker tasks end
