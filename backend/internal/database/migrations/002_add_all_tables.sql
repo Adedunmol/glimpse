@@ -34,11 +34,11 @@ CREATE TABLE uploads (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    user_id TEXT NOT NULL,
-    host_id TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    host_id TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending'
            CHECK (status IN ('pending', 'processing', 'done', 'failed')),
-    expires_at TIMESTAMPTZ NOT NULL
+    expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '30 days')
 );
 
 CREATE TRIGGER set_updated_at_uploads
