@@ -20,6 +20,12 @@ type PostgresUserRepository struct {
 	server *server.Server
 }
 
+func NewPostgresRepository(s *server.Server) *PostgresUserRepository {
+	return &PostgresUserRepository{
+		server: s,
+	}
+}
+
 func (p *PostgresUserRepository) GetUserEmail(ctx context.Context, email string) (string, error) {
 	stmt := `
 		SELECT
