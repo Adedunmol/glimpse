@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Adedunmol/glimpse/internal/model"
+	"github.com/Adedunmol/glimpse/internal/model/user"
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/jackc/pgx/v5"
 )
 
+var ErrNotFound = pgx.ErrNoRows
+
 type UserRepository interface {
 	GetUserEmail(ctx context.Context, email string) (string, error)
-	GetUserByID(ctx context.Context, userID string) (*model.User, error)
-	CreateUser(ctx context.Context, email, clerkID string) (*model.User, error)
+	GetUserByID(ctx context.Context, userID string) (*user.User, error)
+	CreateUser(ctx context.Context, email, clerkID string) (*user.User, error)
 	DeleteUser(ctx context.Context, userId string) error
 }
 
@@ -43,7 +45,7 @@ func (p *PostgresUserRepository) GetUserEmail(ctx context.Context, email string)
 		return "", fmt.Errorf("failed to execute query to fetch user email")
 	}
 
-	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[model.User])
+	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[user.User])
 	if err != nil {
 		return "", fmt.Errorf("failed to collect row from table:users")
 	}
@@ -51,7 +53,7 @@ func (p *PostgresUserRepository) GetUserEmail(ctx context.Context, email string)
 	return user.Email, nil
 }
 
-func (p *PostgresUserRepository) GetUserByID(ctx context.Context, userID string) (*model.User, error) {
+func (p *PostgresUserRepository) GetUserByID(ctx context.Context, userID string) (*user.User, error) {
 	stmt := `
 			SELECT
 				*
@@ -68,7 +70,7 @@ func (p *PostgresUserRepository) GetUserByID(ctx context.Context, userID string)
 		return nil, fmt.Errorf("failed to execute query to fetch user email")
 	}
 
-	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[model.User])
+	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[user.User])
 	if err != nil {
 		return nil, fmt.Errorf("failed to collect row from table:users")
 	}
@@ -76,7 +78,7 @@ func (p *PostgresUserRepository) GetUserByID(ctx context.Context, userID string)
 	return &user, nil
 }
 
-func (p *PostgresUserRepository) CreateUser(ctx context.Context, email, clerkId string) (*model.User, error) {
+func (p *PostgresUserRepository) CreateUser(ctx context.Context, email, clerkId string) (*user.User, error) {
 	stmt := `
 		INSERT INTO
 			users (user_id, email, created_at, updated_at)
@@ -96,7 +98,7 @@ func (p *PostgresUserRepository) CreateUser(ctx context.Context, email, clerkId 
 		return nil, fmt.Errorf("failed to execute create user query")
 	}
 
-	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[model.User])
+	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[user.User])
 	if err != nil {
 		return nil, fmt.Errorf("failed too collect row from table:user")
 	}

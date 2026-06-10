@@ -25,6 +25,7 @@ require (
 	github.com/resend/resend-go/v2 v2.28.0
 	github.com/rs/zerolog v1.35.1
 	github.com/stretchr/testify v1.11.1
+	github.com/svix/svix-webhooks v1.95.2
 	github.com/testcontainers/testcontainers-go v0.42.0
 	golang.org/x/text v0.37.0
 	golang.org/x/time v0.15.0

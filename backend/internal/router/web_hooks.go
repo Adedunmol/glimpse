@@ -6,5 +6,5 @@ import (
 )
 
 func registerWebHookRoutes(r *echo.Echo, h *handler.Handlers) {
-	r.POST("/clerk/webhook", nil)
+	r.POST("/clerk/webhook", h.Clerk.HandleEvent)
 }

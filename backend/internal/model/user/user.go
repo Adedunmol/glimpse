@@ -7,4 +7,5 @@ type User struct {
 	model.BaseWithUpdatedAt
 
 	ClerkUserID string `json:"clerkUserId" db:"clerk_user_id"`
+	Email       string `json:"email" db:"email"`
 }
