@@ -4,6 +4,10 @@ import (
 	"strings"
 )
 
+const (
+	UnauthorizedCode string = "UNAUTHORIZED"
+)
+
 type FieldError struct {
 	Field string `json:"field"`
 	Error string `json:"error"`

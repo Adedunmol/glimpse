@@ -18,6 +18,11 @@ type BaseWithUpdatedAt struct {
 	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
 }
 
+type BaseWithTimeStamp struct {
+	BaseWithUpdatedAt
+	BaseWithCreatedAt
+}
+
 type Base struct {
 	BaseWithId
 	BaseWithCreatedAt

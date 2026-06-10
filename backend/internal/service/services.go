@@ -10,14 +10,17 @@ type Services struct {
 	Auth          *AuthService
 	Job           *job.JobService
 	UploadService *UploadService
+	ClerkService *ClerkService
 }
 
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
 	authService := NewAuthService(s)
+	clerkService := NewClerkService(s, repos.UserRepository)
 
 	return &Services{
 		Auth:          authService,
 		Job:           s.Job,
 		UploadService: NewUploadService(s, *repos.Upload),
+		ClerkService: clerkService,
 	}, nil
 }

@@ -32,18 +32,22 @@ func (auth *AuthMiddleware) RequireAuth(next echo.HandlerFunc) echo.HandlerFunc 
 				w.WriteHeader(http.StatusUnauthorized)
 
 				response := map[string]string{
-					"code":     "UNAUTHORIZED",
-					"message":  "Unauthorized",
+					"code":     errs.UnauthorizedCode,
+					"message":  errs.UnauthorizedCode,
 					"override": "false",
 					"status":   "401",
 				}
 
+				//capture both errors in cascading flow
+				//auth failure will probably lead to encoding failure
+				auth.server.Logger.Error().
+					Str("function", "RequireAuth").
+					Dur("duration", time.Since(start)).
+					Msg("could not get session claims from context")
+
 				if err := json.NewEncoder(w).Encode(response); err != nil {
 					auth.server.Logger.Error().Err(err).Str("function", "RequireAuth").Dur(
 						"duration", time.Since(start)).Msg("failed to write JSON response")
-				} else {
-					auth.server.Logger.Error().Str("function", "RequireAuth").Dur("duration", time.Since(start)).Msg(
-						"could not get session claims from context")
 				}
 			}))))(func(c echo.Context) error {
 		start := time.Now()
