@@ -10,8 +10,8 @@ import (
 // ----------------------------------------------------------------------------------------------
 
 type CreateUploadPayload struct {
-	Name      string     `json:"name" validate:"required,min=1,max=255"`
-	Status    *Status    `json:"status" validate:"omitempty,oneof=pending processing done failed"`
+	Name string `json:"name" validate:"required,min=1,max=255"`
+	// Status    *Status    `json:"status" validate:"omitempty,oneof=pending processing done failed"`
 	ExpiresAt *time.Time `json:"expiresAt"`
 }
 
@@ -23,9 +23,9 @@ func (p *CreateUploadPayload) Validate() error {
 // ----------------------------------------------------------------------------------------------
 
 type UpdateUploadPayload struct {
-	ID        uuid.UUID  `param:"id" validate:"required,uuid"`
-	Name      *string    `json:"name" validate:"omitempty,min=1,max=255"`
-	Status    *Status    `json:"status" validate:"omitempty,oneof=pending processing done failed"`
+	ID   uuid.UUID `param:"id" validate:"required,uuid"`
+	Name *string   `json:"name" validate:"omitempty,min=1,max=255"`
+	// Status    *Status    `json:"status" validate:"omitempty,oneof=pending processing done failed"`
 	ExpiresAt *time.Time `json:"expiresAt"`
 }
 
@@ -53,6 +53,7 @@ type GetUploadsQuery struct {
 	Sort   *string `query:"sort" validate:"omitempty,oneof=created_at updated_at name"`
 	Order  *string `query:"order" validate:"omitempty,oneof=asc desc"`
 	Search *string `query:"search" validate:"omitempty,min=1"`
+	Status *Status `query:"status" validate:"omitempty,oneof=pending processing done failed"`
 }
 
 func (q *GetUploadsQuery) Validate() error {
@@ -76,6 +77,10 @@ func (q *GetUploadsQuery) Validate() error {
 
 	if q.Order == nil {
 		q.Order = new("desc")
+	}
+
+	if q.Status == nil {
+		q.Status = new(Status("pending"))
 	}
 
 	return nil
