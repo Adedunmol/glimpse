@@ -8,6 +8,7 @@ import (
 
 	"github.com/Adedunmol/glimpse/internal/repository"
 	"github.com/Adedunmol/glimpse/internal/server"
+	"github.com/go-playground/validator/v10"
 )
 
 const (
@@ -29,8 +30,11 @@ type ClerkEventPayload struct {
 	InstanceID string          `json:"instance_id"`
 }
 
-// TODO: implement validator logic for payload
 func (p *ClerkEventPayload) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(p); err != nil {
+		return err
+	}
 	return nil
 }
 
