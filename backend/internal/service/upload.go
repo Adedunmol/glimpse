@@ -23,9 +23,13 @@ func NewUploadService(server *server.Server, uploadRepo repository.UploadReposit
 }
 
 func (s *UploadService) CreateUpload(ctx echo.Context, userID string, payload *upload.CreateUploadPayload) (*upload.Upload, error) {
-	_ = middleware.GetLogger(ctx)
+	logger := middleware.GetLogger(ctx)
 
-	// ctx.Request().Context()
+	uploadItem, err := s.uploadRepo.CreateUpload(ctx.Request().Context(), userID, payload)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create upload")
+		return nil, err
+	}
 
 	// business event log
 	eventLogger := middleware.GetLogger(ctx)
@@ -35,7 +39,7 @@ func (s *UploadService) CreateUpload(ctx echo.Context, userID string, payload *u
 		Str("name", "").
 		Msg("Upload created successfully")
 
-	return nil, nil
+	return uploadItem, nil
 }
 
 func (s *UploadService) GetUploadByID(ctx echo.Context, userID string, uploadID uuid.UUID) (*upload.Upload, error) {

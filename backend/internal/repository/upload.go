@@ -49,7 +49,7 @@ func (r *UploadRepository) CreateUpload(ctx context.Context, userID string, payl
 }
 
 func (r *UploadRepository) GetUploadByID(ctx context.Context, userID string, uploadID uuid.UUID) (*upload.Upload, error) {
-	// create a new model (PopulatedUpload) which contains extra data regarding the upload, such as the number of files in the upload, total size of the upload, etc.
+	// TODO: create a new model (PopulatedUpload) which contains extra data regarding the upload, such as the number of files in the upload, total size of the upload, etc.
 	// This will be used to return more data to the client without having to make multiple queries to the database.
 	// And also update the query
 
@@ -76,7 +76,7 @@ func (r *UploadRepository) GetUploadByID(ctx context.Context, userID string, upl
 }
 
 func (r *UploadRepository) GetUploads(ctx context.Context, userID string, query *upload.GetUploadsQuery) (*model.PaginatedResponse[upload.Upload], error) {
-	// create a new model (PopulatedUpload) which contains extra data regarding the upload, such as the number of files in the upload, total size of the upload, etc.
+	// TODO: create a new model (PopulatedUpload) which contains extra data regarding the upload, such as the number of files in the upload, total size of the upload, etc.
 	// This will be used to return more data to the client without having to make multiple queries to the database.
 	// And also update the query
 
@@ -194,6 +194,8 @@ func (r *UploadRepository) UpdateUpload(ctx context.Context, userID string, payl
 	return updatedUpload, nil
 }
 
+var UploadNotFound = "UPLOAD_NOT_FOUND"
+
 func (r *UploadRepository) DeleteUpload(ctx context.Context, userID string, uploadID uuid.UUID) error {
 	stmt := `
 		DELETE FROM uploads
@@ -210,8 +212,7 @@ func (r *UploadRepository) DeleteUpload(ctx context.Context, userID string, uplo
 	}
 
 	if result.RowsAffected() == 0 {
-		code := "UPLOAD_NOT_FOUND"
-		return errs.NewNotFoundError("upload not found", false, &code)
+		return errs.NewNotFoundError("upload not found", false, &UploadNotFound)
 	}
 
 	return nil
