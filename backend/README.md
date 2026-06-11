@@ -19,7 +19,14 @@ The project uses Docker for local development. To start all required services (a
 task docker:up-dev
 ```
 
-Once the services are running, the API will be available on the configured application port.
+Once the services are running: 
+
+- The API will be available on the configured application port.
+- The interactive API documentation can be accessed at:
+
+http://localhost:8080/docs
+
+The documentation is generated from the OpenAPI specification and provides details about available endpoints, request/response schemas, authentication requirements, and example requests.
 
 ## Stopping the Application
 
