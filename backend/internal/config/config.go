@@ -21,6 +21,7 @@ type Config struct {
 	Integration   IntegrationConfig    `koanf:"integration" validate:"required"`
 	Observability *ObservabilityConfig `koanf:"observability"`
 	Clerk         Clerk                `koanf:"clerk" validate:"required"`
+	AWS           AWSConfig            `koanf:"aws" validate:"required"`
 }
 
 type Primary struct {
@@ -46,6 +47,14 @@ type DatabaseConfig struct {
 	MaxIdleConns    int    `koanf:"max_idle_conns" validate:"required"`
 	ConnMaxLifetime int    `koanf:"conn_max_lifetime" validate:"required"`
 	ConnMaxIdleTime int    `koanf:"conn_max_idle_time" validate:"required"`
+}
+
+type AWSConfig struct {
+	Region          string `koanf:"region" validate:"required"`
+	AccessKeyID     string `koanf:"access_key_id" validate:"required"`
+	SecretAccessKey string `koanf:"secret_access_key" validate:"required"`
+	UploadBucket    string `koanf:"upload_bucket" validate:"required"`
+	EndpointURL     string `koanf:"endpoint_url"`
 }
 
 type RedisConfig struct {

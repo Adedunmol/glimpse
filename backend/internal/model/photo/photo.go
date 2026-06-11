@@ -2,16 +2,16 @@ package photo
 
 import "github.com/Adedunmol/glimpse/internal/model"
 
-type PhotoStatus string
+type Status string
 
 const (
-	PhotoStatusPending  PhotoStatus = "pending"
-	PhotoStatusUploaded PhotoStatus = "uploaded"
+	PhotoStatusPending  Status = "pending"
+	PhotoStatusUploaded Status = "uploaded"
 )
 
 type Photo struct {
 	model.Base
-	UploadID   string      `json:"uploadId" db:"upload_id"`
-	StorageKey string      `json:"storageKey" db:"storage_key"`
-	Status     PhotoStatus `json:"status" db:"status"`
+	UploadID   string `json:"uploadId" db:"upload_id"`
+	StorageKey string `json:"storageKey" db:"storage_key"`
+	Status     Status `json:"status" db:"status"`
 }
