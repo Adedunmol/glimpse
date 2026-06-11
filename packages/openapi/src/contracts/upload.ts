@@ -1,5 +1,5 @@
 import { getSecurityMetadata } from "@/utils.js";
-import { schemaWithPagination, ZUpload } from "@glimpse/zod";
+import {schemaWithPagination, ZPresignedUrls, ZUpload} from "@glimpse/zod";
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 
@@ -30,7 +30,7 @@ export const uploadContract = c.router(
         
         createUpload: {
         summary: "Create a new upload",
-        path: "/todos",
+        path: "/uploads",
         method: "POST",
         description: "Create a new upload",
         body: ZUpload.pick({
@@ -79,6 +79,23 @@ export const uploadContract = c.router(
             204: z.void(),
         },
         metadata: metadata,
+        },
+
+        getPresignedUrls: {
+            summary: "Get presigned urls",
+            path: "/uploads/:id/photos",
+            method: "POST",
+            description: "This endpoint takes in a list of the images to be uploaded with the upload id and generates a presigned url for each of the photo in the payload",
+            body: z.object({
+                uploadId: z.string(),
+                files: z.array(z.object({
+                    name: z.string()
+                })),
+            }),
+            responses: {
+                200: ZPresignedUrls,
+            },
+            metadata: metadata,
         },
     },
     {

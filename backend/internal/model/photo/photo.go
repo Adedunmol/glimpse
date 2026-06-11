@@ -1,6 +1,8 @@
 package photo
 
-import "github.com/Adedunmol/glimpse/internal/model"
+import (
+	"github.com/Adedunmol/glimpse/internal/model"
+)
 
 type Status string
 
@@ -14,4 +16,14 @@ type Photo struct {
 	UploadID   string `json:"uploadId" db:"upload_id"`
 	StorageKey string `json:"storageKey" db:"storage_key"`
 	Status     Status `json:"status" db:"status"`
+}
+
+type PresignedURL struct {
+	UploadID string   `json:"uploadId"`
+	Uploads  []Upload `json:"uploads"`
+}
+
+type Upload struct {
+	Key string `json:"key"`
+	Url string `json:"url"`
 }

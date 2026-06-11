@@ -6,7 +6,7 @@ type CreatePhotosPayload struct {
 	UploadID string `param:"uploadId" validate:"required,uuid"`
 	Files    []struct {
 		Name string `json:"files" validate:"required,min=1,max=200"`
-	} `json:"files" validate:"required"`
+	} `json:"files" validate:"required,min=1,max=200"`
 }
 
 func (p *CreatePhotosPayload) Validate() error {

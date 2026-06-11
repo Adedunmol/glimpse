@@ -16,7 +16,7 @@ tasks:
     - |
       echo -n 'Are you sure? [y/N] ' && read ans && [ ${ans:-N} = y ]
     silent: true
-    internal: true
+    internal: false
 
   run:
     desc: run the cmd/glimpse application
@@ -39,7 +39,7 @@ tasks:
 
   migrations:up:
     desc: apply all up database migrations
-    deps: [ confirm ]
+    # deps: [ confirm ]
     cmds:
     - echo 'Running up migrations...'
     - tern migrate -m ./internal/database/migrations --conn-string {{.GLIMPSE_DB_DSN}}

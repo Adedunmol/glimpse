@@ -18,4 +18,7 @@ func registerUploadRoutes(r *echo.Group, h *handler.UploadHandler, auth *middlew
 	dynamicUpload.GET("", h.GetUploadByID)
 	dynamicUpload.PATCH("", h.UpdateUpload)
 	dynamicUpload.DELETE("", h.DeleteUpload)
+
+	photos := dynamicUpload.Group("/photos")
+	photos.POST("", h.GetPresignedURLs)
 }

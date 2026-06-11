@@ -18,7 +18,7 @@ type Services struct {
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
 	authService := NewAuthService(s)
 	clerkService := NewClerkService(s, repos.UserRepository)
-	_, err := aws.NewAWS(s) // TODO: embed in photo service
+	awsClient, err := aws.NewAWS(s) // TODO: embed in photo service
 	if err != nil {
 		return nil, fmt.Errorf("error creating aws client: %w", err)
 	}
@@ -26,7 +26,7 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 	return &Services{
 		Auth:          authService,
 		Job:           s.Job,
-		UploadService: NewUploadService(s, *repos.Upload),
+		UploadService: NewUploadService(s, *repos.Upload, awsClient),
 		ClerkService:  clerkService,
 	}, nil
 }

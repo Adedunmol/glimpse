@@ -244,9 +244,7 @@
             "bearerAuth": []
           }
         ]
-      }
-    },
-    "/v1/todos": {
+      },
       "post": {
         "description": "Create a new upload",
         "summary": "Create a new upload",
@@ -521,6 +519,100 @@
             "content": {
               "application/json": {
                 "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/uploads/{id}/photos": {
+      "post": {
+        "description": "This endpoint takes in a list of the images to be uploaded with the upload id and generates a presigned url for each of the photo in the payload",
+        "summary": "Get presigned urls",
+        "tags": [
+          "Upload"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "operationId": "getPresignedUrls",
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uploadId": {
+                    "type": "string"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "uploadId",
+                  "files"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadId": {
+                      "type": "string"
+                    },
+                    "uploads": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "url"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "uploadId",
+                    "uploads"
+                  ]
+                }
               }
             }
           }

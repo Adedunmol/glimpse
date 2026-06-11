@@ -11,3 +11,11 @@ export const ZUpload = z.object({
     createdAt: z.string(),
     updatedAt: z.string(),
 })
+
+export const ZPresignedUrls =  z.object({
+    uploadId: z.string(),
+    uploads: z.object({
+        key: z.string(),
+        url: z.string()
+    })
+})
