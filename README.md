@@ -2,6 +2,10 @@
 
 Go Glimpse is a monorepo containing the backend services, shared packages, and development tooling required to run the application locally.
 
+The mobile application is maintained in a separate repository:
+
+- Mobile App: [https://github.com/ufuomaisaac/Glimpse]
+
 ## Prerequisites
 
 Before getting started, ensure the following tools are installed:
