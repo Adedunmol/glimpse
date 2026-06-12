@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"path/filepath"
+
 	"github.com/Adedunmol/glimpse/internal/lib/aws"
 	"github.com/Adedunmol/glimpse/internal/middleware"
 	"github.com/Adedunmol/glimpse/internal/model"
@@ -11,19 +13,20 @@ import (
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"path/filepath"
 )
 
 type UploadService struct {
 	server     *server.Server
 	uploadRepo repository.UploadRepository
+	photoRepo  repository.PhotoRepository
 	awsClient  *aws.AWS
 }
 
-func NewUploadService(server *server.Server, uploadRepo repository.UploadRepository, awsClient *aws.AWS) *UploadService {
+func NewUploadService(server *server.Server, uploadRepo repository.UploadRepository, photoRepo repository.PhotoRepository, awsClient *aws.AWS) *UploadService {
 	return &UploadService{
 		server:     server,
 		uploadRepo: uploadRepo,
+		photoRepo:  photoRepo,
 		awsClient:  awsClient,
 	}
 }
@@ -131,8 +134,7 @@ func (s *UploadService) GetPresignedUrls(ctx echo.Context, userID string, payloa
 	}
 
 	result := &photo.PresignedURL{
-		UploadID: payload.UploadID,
-		Uploads:  uploads,
+		Uploads: uploads,
 	}
 
 	eventLogger := middleware.GetLogger(ctx)
@@ -142,4 +144,22 @@ func (s *UploadService) GetPresignedUrls(ctx echo.Context, userID string, payloa
 		Msg("Presigned URLs generated successfully")
 
 	return result, nil
+}
+
+func (s *UploadService) CompletePhotosUpload(ctx echo.Context, userID string, payload *photo.CompletePhotosPayload) error {
+	logger := middleware.GetLogger(ctx)
+
+	err := s.photoRepo.CreatePhotos(ctx.Request().Context(), userID, payload)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create photos upload")
+		return err
+	}
+
+	eventLogger := middleware.GetLogger(ctx)
+	eventLogger.Info().
+		Str("event", "photos_upload").
+		Str("upload_id", payload.UploadID).
+		Msg("Photos uploaded successfully")
+
+	return nil
 }

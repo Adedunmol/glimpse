@@ -555,9 +555,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "uploadId": {
-                    "type": "string"
-                  },
                   "files": {
                     "type": "array",
                     "items": {
@@ -574,7 +571,6 @@
                   }
                 },
                 "required": [
-                  "uploadId",
                   "files"
                 ]
               }

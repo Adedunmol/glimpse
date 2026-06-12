@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"github.com/Adedunmol/glimpse/internal/model/photo"
 	"net/http"
+
+	"github.com/Adedunmol/glimpse/internal/model/photo"
 
 	"github.com/Adedunmol/glimpse/internal/middleware"
 	"github.com/Adedunmol/glimpse/internal/model"
@@ -93,5 +94,17 @@ func (h *UploadHandler) GetPresignedURLs(c echo.Context) error {
 		},
 		http.StatusOK,
 		&photo.CreatePhotosPayload{},
+	)(c)
+}
+
+func (h *UploadHandler) CompleteUpload(c echo.Context) error {
+	return HandleNoContent(
+		h.Handler,
+		func(c echo.Context, payload *photo.CompletePhotosPayload) error {
+			userID := middleware.GetUserID(c)
+			return h.uploadService.CompletePhotosUpload(c, userID, payload)
+		},
+		http.StatusNoContent,
+		&photo.CompletePhotosPayload{},
 	)(c)
 }

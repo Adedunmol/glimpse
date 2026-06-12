@@ -25,3 +25,17 @@ func (p *DeletePhotosPayload) Validate() error {
 	validate := validator.New()
 	return validate.Struct(p)
 }
+
+// -----------------------------------------------------------------------
+
+type CompletePhotosPayload struct {
+	UploadID string `param:"uploadId" validate:"required,uuid"`
+	Files    []struct {
+		Key string `json:"key" validate:"required"`
+	} `json:"files" validate:"required,min=1,max=200"`
+}
+
+func (p *CompletePhotosPayload) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
+}

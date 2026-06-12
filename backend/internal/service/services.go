@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/Adedunmol/glimpse/internal/lib/aws"
 	"github.com/Adedunmol/glimpse/internal/lib/job"
 	"github.com/Adedunmol/glimpse/internal/repository"
@@ -26,7 +27,7 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 	return &Services{
 		Auth:          authService,
 		Job:           s.Job,
-		UploadService: NewUploadService(s, *repos.Upload, awsClient),
+		UploadService: NewUploadService(s, *repos.Upload, *repos.Photo, awsClient),
 		ClerkService:  clerkService,
 	}, nil
 }

@@ -19,8 +19,7 @@ type Photo struct {
 }
 
 type PresignedURL struct {
-	UploadID string   `json:"uploadId"`
-	Uploads  []Upload `json:"uploads"`
+	Uploads []Upload `json:"uploads"`
 }
 
 type Upload struct {

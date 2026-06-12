@@ -87,7 +87,6 @@ export const uploadContract = c.router(
             method: "POST",
             description: "This endpoint takes in a list of the images to be uploaded with the upload id and generates a presigned url for each of the photo in the payload",
             body: z.object({
-                uploadId: z.string(),
                 files: z.array(z.object({
                     name: z.string()
                 })),
