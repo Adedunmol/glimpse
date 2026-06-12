@@ -19,5 +19,5 @@ func registerUploadRoutes(r *echo.Group, h *handler.UploadHandler, auth *middlew
 	dynamicUpload.PATCH("", h.UpdateUpload)
 	dynamicUpload.DELETE("", h.DeleteUpload)
 	dynamicUpload.POST("/photos", h.GetPresignedURLs)
-	dynamicUpload.POST("/completed", h.CompleteUpload)
+	dynamicUpload.POST("/complete", h.CompleteUpload)
 }
