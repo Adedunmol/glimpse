@@ -23,7 +23,7 @@ func NewClusterRepository(srv *server.Server) *ClusterRepository {
 	}
 }
 
-func (c *ClusterRepository) GetClusterById(ctx context.Context, userID string, clusterID uuid.UUID) (*cluster.Cluster, error) {
+func (c *ClusterRepository) GetClusterByID(ctx context.Context, userID string, clusterID uuid.UUID) (*cluster.Cluster, error) {
 	stmt := `
 		SELECT
 			c.*
@@ -46,12 +46,12 @@ func (c *ClusterRepository) GetClusterById(ctx context.Context, userID string, c
 		return nil, fmt.Errorf("failed to execute get cluster by id query for user_id=%s cluster_id=%s: %w", userID, clusterID, err)
 	}
 
-	cluster, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[cluster.Cluster])
+	clusterItem, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[cluster.Cluster])
 	if err != nil {
 		return nil, fmt.Errorf("failed to collect row from table:clusters for user_id=%s cluster_id=%s: %w", userID, clusterID, err)
 	}
 
-	return &cluster, nil
+	return &clusterItem, nil
 }
 
 func (c *ClusterRepository) GetClusters(ctx context.Context, userID string, query cluster.GetClustersQuery) (*model.PaginatedResponse[cluster.Cluster], error) {

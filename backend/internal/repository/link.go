@@ -23,7 +23,7 @@ func NewLinkRepository(srv *server.Server) *LinkRepository {
 	}
 }
 
-func (l *LinkRepository) GetLinkById(ctx context.Context, userID string, linkID uuid.UUID) (*link.Link, error) {
+func (l *LinkRepository) GetLinkByID(ctx context.Context, userID string, linkID uuid.UUID) (*link.Link, error) {
 	stmt := `
 		SELECT
 			l.*

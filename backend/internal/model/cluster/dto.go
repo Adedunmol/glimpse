@@ -5,7 +5,7 @@ import "github.com/go-playground/validator/v10"
 type GetClustersQuery struct {
 	Page   *int    `query:"page" validate:"omitempty,min=1"`
 	Limit  *int    `query:"limit" validate:"omitempty,min=1,max=100"`
-	Sort   *string `query:"sort" validate:"omitempty,oneof=created_at updated_at name"`
+	Sort   *string `query:"sort" validate:"omitempty,oneof=created_at updated_at label"`
 	Order  *string `query:"order" validate:"omitempty,oneof=asc desc"`
 	Search *string `query:"search" validate:"omitempty,min=1"`
 }
