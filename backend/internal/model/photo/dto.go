@@ -5,7 +5,7 @@ import "github.com/go-playground/validator/v10"
 type CreatePhotosPayload struct {
 	UploadID string `param:"uploadId" validate:"required,uuid"`
 	Files    []struct {
-		Name string `json:"files" validate:"required,min=1,max=200"`
+		Name string `json:"name" validate:"required,min=1,max=200"`
 	} `json:"files" validate:"required,min=1,max=200"`
 }
 
