@@ -155,6 +155,8 @@ func (s *UploadService) CompletePhotosUpload(ctx echo.Context, userID string, pa
 		return err
 	}
 
+	// TODO: enqueue the upload id to be picked up by the workers
+
 	eventLogger := middleware.GetLogger(ctx)
 	eventLogger.Info().
 		Str("event", "photos_upload").
