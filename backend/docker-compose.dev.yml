@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      # dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.dev
     container_name: glimpse_app
     env_file:
       - .env
