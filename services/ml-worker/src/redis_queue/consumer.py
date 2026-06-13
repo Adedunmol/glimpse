@@ -16,7 +16,7 @@ class QueueConsumer:
         self._client: redis.Redis | None = None
 
     async def connect(self):
-        self._client = redis.from_url(self.redis_url, decode_responses=True)
+        self._client = redis.from_url(self.redis_url, decode_responses=True, socket_timeout=10, socket_connect_timeout=5)
         await self._client.ping()
         logger.info("Connected to Redis at %s", self.redis_url)
 
@@ -29,7 +29,10 @@ class QueueConsumer:
         while True:
             try:
                 # BLPOP blocks until an item is available or timeout elapses
-                result = await self._client.blpop(self.queue_name, timeout=5)
+                try:
+                    result = await self._client.blpop(self.queue_name, timeout=0)
+                except redis.TimeoutError:
+                    continue
                 if result is None:
                     continue  # timeout, loop again
 
