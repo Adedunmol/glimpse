@@ -244,9 +244,7 @@
             "bearerAuth": []
           }
         ]
-      }
-    },
-    "/v1/todos": {
+      },
       "post": {
         "description": "Create a new upload",
         "summary": "Create a new upload",
@@ -532,6 +530,160 @@
         ]
       }
     },
+    "/v1/uploads/{id}/photos": {
+      "post": {
+        "description": "This endpoint takes in a list of the images to be uploaded with the upload id and generates a presigned url for each of the photo in the payload",
+        "summary": "Get presigned urls",
+        "tags": [
+          "Upload"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "operationId": "getPresignedUrls",
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadId": {
+                      "type": "string"
+                    },
+                    "uploads": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "url"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "uploadId",
+                    "uploads"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/uploads/{id}/complete": {
+      "post": {
+        "description": "This endpoint takes in a list of pictures that have been successfully uploaded to S3 by the client and creates records for them in the database and also kickstart the processing flow",
+        "summary": "Complete upload",
+        "tags": [
+          "Upload"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "operationId": "completeUpload",
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "204",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/clerk/webhook": {
       "post": {
         "description": "Verifies Clerk webhook signatures and synchronizes local user data.",
@@ -550,9 +702,8 @@
                 "properties": {
                   "data": {
                     "type": "object",
-                    "additionalProperties": {
-                      "nullable": true
-                    }
+                    "properties": {},
+                    "additionalProperties": true
                   },
                   "object": {
                     "type": "string"

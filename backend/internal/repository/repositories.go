@@ -4,6 +4,7 @@ import "github.com/Adedunmol/glimpse/internal/server"
 
 type Repositories struct {
 	Upload         *UploadRepository
+	Photo          *PhotoRepository
 	UserRepository UserRepository
 }
 
@@ -12,5 +13,6 @@ func NewRepositories(s *server.Server) *Repositories {
 	return &Repositories{
 		UserRepository: userRepo,
 		Upload:         NewUploadRepository(s),
+		Photo:          NewPhotoRepository(s),
 	}
 }

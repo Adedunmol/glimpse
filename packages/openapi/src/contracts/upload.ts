@@ -1,5 +1,5 @@
 import { getSecurityMetadata } from "@/utils.js";
-import { schemaWithPagination, ZUpload } from "@glimpse/zod";
+import {schemaWithPagination, ZPresignedUrls, ZUpload} from "@glimpse/zod";
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 
@@ -30,7 +30,7 @@ export const uploadContract = c.router(
         
         createUpload: {
         summary: "Create a new upload",
-        path: "/todos",
+        path: "/uploads",
         method: "POST",
         description: "Create a new upload",
         body: ZUpload.pick({
@@ -75,6 +75,38 @@ export const uploadContract = c.router(
         path: "/uploads/:id",
         method: "DELETE",
         description: "Delete upload",
+        responses: {
+            204: z.void(),
+        },
+        metadata: metadata,
+        },
+
+        getPresignedUrls: {
+            summary: "Get presigned urls",
+            path: "/uploads/:id/photos",
+            method: "POST",
+            description: "This endpoint takes in a list of the images to be uploaded with the upload id and generates a presigned url for each of the photo in the payload",
+            body: z.object({
+                files: z.array(z.object({
+                    name: z.string()
+                })),
+            }),
+            responses: {
+                200: ZPresignedUrls,
+            },
+            metadata: metadata,
+        },
+
+        completeUpload: {
+        summary: "Complete upload",
+        path: "/uploads/:id/complete",
+        method: "POST",
+        description: "This endpoint takes in a list of pictures that have been successfully uploaded to S3 by the client and creates records for them in the database and also kickstart the processing flow",
+        body: z.object({
+            files: z.array(z.object({
+                key: z.string()
+            })),
+        }),
         responses: {
             204: z.void(),
         },

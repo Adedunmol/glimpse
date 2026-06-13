@@ -39,7 +39,7 @@ tasks:
 
   migrations:up:
     desc: apply all up database migrations
-    deps: [ confirm ]
+    # deps: [ confirm ] # confirmation not working for me locally
     cmds:
     - echo 'Running up migrations...'
     - tern migrate -m ./internal/database/migrations --conn-string {{.GLIMPSE_DB_DSN}}
