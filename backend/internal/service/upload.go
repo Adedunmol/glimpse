@@ -134,7 +134,8 @@ func (s *UploadService) GetPresignedUrls(ctx echo.Context, userID string, payloa
 	}
 
 	result := &photo.PresignedURL{
-		Uploads: uploads,
+		UploadID: payload.UploadID,
+		Uploads:  uploads,
 	}
 
 	eventLogger := middleware.GetLogger(ctx)

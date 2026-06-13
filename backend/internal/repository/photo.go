@@ -27,18 +27,23 @@ func (r *PhotoRepository) CreatePhotos(ctx context.Context, userID string, paylo
 
 	stmt := `
 		INSERT INTO photos (upload_id, storage_key, status)
-		SELECT @upload_id, key, @status
-		FROM unnest(@storage_keys::text[]) AS key
-		RETURNING *
+		SELECT u.id, key, @status
+ 		FROM uploads u
+ 		CROSS JOIN unnest(@storage_keys::text[]) AS key
+ 		WHERE u.id = @upload_id AND u.host_id = @host_id
 	`
 
-	_, err := r.server.DB.Pool.Exec(ctx, stmt, pgx.NamedArgs{
+	result, err := r.server.DB.Pool.Exec(ctx, stmt, pgx.NamedArgs{
 		"upload_id":    payload.UploadID,
 		"storage_keys": storageKeys,
 		"status":       "uploaded",
+		"host_id":      userID,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to execute batch create photos query for upload_id=%s user_id=%s: %w", payload.UploadID, userID, err)
+	}
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("upload not found or not owned by user (upload_id=%s user_id=%s)", payload.UploadID, userID)
 	}
 
 	return nil

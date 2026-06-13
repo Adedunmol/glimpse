@@ -16,6 +16,6 @@ export const ZPresignedUrls =  z.object({
     uploadId: z.string(),
     uploads: z.object({
         key: z.string(),
-        url: z.string()
+        url: z.string().url()
     })
 })

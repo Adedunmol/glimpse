@@ -104,7 +104,7 @@ export const uploadContract = c.router(
         description: "This endpoint takes in a list of pictures that have been successfully uploaded to S3 by the client and creates records for them in the database and also kickstart the processing flow",
         body: z.object({
             files: z.array(z.object({
-                name: z.string()
+                key: z.string()
             })),
         }),
         responses: {
