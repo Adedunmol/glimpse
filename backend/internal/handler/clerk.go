@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/Adedunmol/glimpse/internal/middleware"
 	"github.com/Adedunmol/glimpse/internal/model/user"
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/Adedunmol/glimpse/internal/service"
@@ -37,6 +38,7 @@ func (h *ClerkWebHookHandler) HandleEvent(c echo.Context) error {
 		h.Handler,
 
 		func(c echo.Context, _ *user.ClerkEventPayload) (any, error) {
+			logger := middleware.GetLogger(c)
 			raw, err := io.ReadAll(c.Request().Body)
 			if err != nil {
 				return nil, echo.NewHTTPError(http.StatusBadRequest, "failed to read body")
@@ -46,15 +48,20 @@ func (h *ClerkWebHookHandler) HandleEvent(c echo.Context) error {
 
 			headers := c.Request().Header
 			if err = h.wh.Verify(raw, headers); err != nil {
-				h.server.Logger.Error().Err(err).Msg("failed to verify webhook signature")
+				logger.Error().Err(err).Msg("failed to verify webhook signature")
 				return nil, echo.NewHTTPError(http.StatusBadRequest, "Invalid webhook signature")
 			}
 
 			var payload user.ClerkEventPayload
 			if err = json.Unmarshal(raw, &payload); err != nil {
-				h.server.Logger.Error().Err(err).Msg("error decoding raw payload")
+				logger.Error().Err(err).Msg("error decoding raw payload")
 				return nil, echo.NewHTTPError(http.StatusUnprocessableEntity, "malformed json")
 			}
+
+			logger.Info().
+				Str("event", "clerk event").
+				Str("event_type", payload.EventType).
+				Msg("Clerk event received")
 
 			switch payload.EventType {
 			case service.UserCreatedEvent:
@@ -71,7 +78,7 @@ func (h *ClerkWebHookHandler) HandleEvent(c echo.Context) error {
 					ClerkUserID: userData.ID,
 				}
 
-				if err := h.clerkService.HandleNewUserEvent(c.Request().Context(), userDTO); err != nil {
+				if err := h.clerkService.HandleNewUserEvent(c.Request().Context(), logger, userDTO); err != nil {
 					return nil, fmt.Errorf("failed to handle create event: %w", err)
 				}
 			case service.UserDeletedEvent:
@@ -83,6 +90,8 @@ func (h *ClerkWebHookHandler) HandleEvent(c echo.Context) error {
 				if err := h.clerkService.HandleDeleteUserEvent(c.Request().Context(), userData.ID); err != nil {
 					return nil, fmt.Errorf("failed to handle delete event: %w", err)
 				}
+			default:
+				logger.Warn().Msg("unhandled clerk event")
 			}
 			return nil, nil
 		},

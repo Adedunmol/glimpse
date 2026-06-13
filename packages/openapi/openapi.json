@@ -683,6 +683,63 @@
           }
         ]
       }
+    },
+    "/clerk/webhook": {
+      "post": {
+        "description": "Verifies Clerk webhook signatures and synchronizes local user data.",
+        "summary": "Handle Clerk webhook events",
+        "tags": [
+          "ClerkWebhook"
+        ],
+        "parameters": [],
+        "operationId": "postEvent",
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {},
+                    "additionalProperties": true
+                  },
+                  "object": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "instance_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "data",
+                  "object",
+                  "type",
+                  "timestamp",
+                  "instance_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
     }
   },
   "info": {

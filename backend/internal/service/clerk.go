@@ -8,6 +8,7 @@ import (
 	"github.com/Adedunmol/glimpse/internal/model/user"
 	"github.com/Adedunmol/glimpse/internal/repository"
 	"github.com/Adedunmol/glimpse/internal/server"
+	"github.com/rs/zerolog"
 )
 
 const (
@@ -25,18 +26,18 @@ func NewClerkService(srv *server.Server, ur repository.UserRepository) *ClerkSer
 	return &ClerkService{server: srv, userRepo: ur}
 }
 
-func (c *ClerkService) HandleNewUserEvent(ctx context.Context, payload user.CreateUserDTO) error {
+func (c *ClerkService) HandleNewUserEvent(ctx context.Context, logger *zerolog.Logger, payload user.CreateUserDTO) error {
 	existing, err := c.userRepo.GetUserEmail(ctx, payload.Email)
 	if err != nil && !errors.Is(err, repository.ErrNotFound) {
 		return fmt.Errorf("user.created: checking existing user: %w", err)
 	}
 	if existing != "" {
-		c.server.Logger.Warn().Msg("user.created: duplicate event, skipping")
+		logger.Warn().Str("event", "user_created").Msg("duplicate event, skipping...")
 		return nil
 	}
 
 	if _, err = c.userRepo.CreateUser(ctx, payload.Email, payload.ClerkUserID); err != nil {
-		c.server.Logger.Error().Err(err).Msg("user.created: failed to create user")
+		logger.Error().Err(err).Msg("user.created: failed to create user")
 		return fmt.Errorf("user.created: %w", err)
 	}
 

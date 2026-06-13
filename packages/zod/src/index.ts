@@ -6,3 +6,4 @@ extendZodWithOpenApi(z);
 export * from "./utils.js";
 export * from "./health.js";
 export * from "./upload/index.js";
+export * from "./clerk.js";
