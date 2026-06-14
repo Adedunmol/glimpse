@@ -1,6 +1,9 @@
 package cluster
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
+)
 
 type GetClustersQuery struct {
 	Page   *int    `query:"page" validate:"omitempty,min=1"`
@@ -33,4 +36,13 @@ func (q *GetClustersQuery) Validate() error {
 	}
 
 	return nil
+}
+
+type GetClusterByIDPayload struct {
+	ID uuid.UUID `param:"clusterId" validate:"required,uuid"`
+}
+
+func (p *GetClusterByIDPayload) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
 }

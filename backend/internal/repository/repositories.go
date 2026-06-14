@@ -6,6 +6,8 @@ type Repositories struct {
 	Upload         *UploadRepository
 	Photo          *PhotoRepository
 	UserRepository UserRepository
+	Cluster        *ClusterRepository
+	Link           *LinkRepository
 }
 
 func NewRepositories(s *server.Server) *Repositories {
@@ -14,5 +16,7 @@ func NewRepositories(s *server.Server) *Repositories {
 		UserRepository: userRepo,
 		Upload:         NewUploadRepository(s),
 		Photo:          NewPhotoRepository(s),
+		Cluster:        NewClusterRepository(s),
+		Link:           NewLinkRepository(s),
 	}
 }

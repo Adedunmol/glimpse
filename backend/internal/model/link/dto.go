@@ -41,12 +41,41 @@ func (p *UpdateLinkPayload) Validate() error {
 }
 
 // ----------------------------------------------------------------------------------------------
+type GetLinkByClusterIDWithQueryPayload struct {
+	GetLinkByClusterIDPayload
+	*GetLinksQuery
+}
+
+func (p *GetLinkByClusterIDWithQueryPayload) Validate() error {
+	if err := p.GetLinkByClusterIDPayload.Validate(); err != nil {
+		return err
+	}
+	return p.GetLinksQuery.Validate()
+}
 
 type GetLinkByClusterIDPayload struct {
-	ClusterID uuid.UUID `param:"id" validate:"required,uuid"`
+	ClusterID uuid.UUID `param:"clusterId" validate:"required,uuid"`
 }
 
 func (p *GetLinkByClusterIDPayload) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
+}
+
+type GetLinkByIDPayload struct {
+	ID uuid.UUID `param:"linkId" validate:"required,uuid"`
+}
+
+func (p *GetLinkByIDPayload) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
+}
+
+type GetLinkByTokenPayload struct {
+	Token string `param:"token" validate:"required,uuid"`
+}
+
+func (p *GetLinkByTokenPayload) Validate() error {
 	validate := validator.New()
 	return validate.Struct(p)
 }

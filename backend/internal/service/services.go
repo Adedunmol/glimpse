@@ -10,24 +10,30 @@ import (
 )
 
 type Services struct {
-	Auth          *AuthService
-	Job           *job.JobService
-	UploadService *UploadService
-	ClerkService  *ClerkService
+	Auth           *AuthService
+	Job            *job.JobService
+	UploadService  *UploadService
+	ClerkService   *ClerkService
+	ClusterService *ClusterService
+	LinkService    *LinkService
 }
 
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
 	authService := NewAuthService(s)
 	clerkService := NewClerkService(s, repos.UserRepository)
+	clusterService := NewClusterService(s, repos.Cluster)
+	linkService := NewLinkService(s, repos.Link)
 	awsClient, err := aws.NewAWS(s) // TODO: embed in photo service
 	if err != nil {
 		return nil, fmt.Errorf("error creating aws client: %w", err)
 	}
 
 	return &Services{
-		Auth:          authService,
-		Job:           s.Job,
-		UploadService: NewUploadService(s, *repos.Upload, *repos.Photo, awsClient),
-		ClerkService:  clerkService,
+		Auth:           authService,
+		Job:            s.Job,
+		UploadService:  NewUploadService(s, *repos.Upload, *repos.Photo, awsClient),
+		ClerkService:   clerkService,
+		ClusterService: clusterService,
+		LinkService:    linkService,
 	}, nil
 }

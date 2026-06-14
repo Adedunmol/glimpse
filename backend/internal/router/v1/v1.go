@@ -9,4 +9,6 @@ import (
 func RegisterV1Routes(router *echo.Group, handlers *handler.Handlers, middleware *middleware.Middlewares) {
 
 	registerUploadRoutes(router, handlers.Upload, middleware.Auth)
+	registerClusterRoutes(router, handlers.Cluster, middleware.Auth)
+	registerLinkRoutes(router, handlers.Link, middleware.Auth)
 }

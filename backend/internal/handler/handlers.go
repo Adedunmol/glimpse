@@ -10,6 +10,8 @@ type Handlers struct {
 	OpenAPI *OpenAPIHandler
 	Upload  *UploadHandler
 	Clerk   *ClerkWebHookHandler
+	Cluster *ClusterHandler
+	Link    *LinkHandler
 }
 
 func NewHandlers(s *server.Server, services *service.Services) *Handlers {
@@ -23,5 +25,7 @@ func NewHandlers(s *server.Server, services *service.Services) *Handlers {
 		OpenAPI: NewOpenAPIHandler(s),
 		Upload:  NewUploadHandler(s, services.UploadService),
 		Clerk:   clerk,
+		Cluster: NewClusterHandler(s, services.ClusterService),
+		Link:    NewLinkHandler(s, services.LinkService),
 	}
 }
