@@ -11,7 +11,7 @@ async def check_and_trigger_clustering(client, event_id: str):
     lock_key = f"event:{event_id}:cluster_triggered"
 
     processed = await client.incr(processed_key)
-    total = await client.incr(total_key)
+    total = await client.get(total_key)
 
     if total is None:
         logger.warning("No total count found for event %s", event_id)
