@@ -58,7 +58,8 @@ type AWSConfig struct {
 }
 
 type RedisConfig struct {
-	Address string `koanf:"address" validate:"required"`
+	Address    string `koanf:"address" validate:"required"`
+	StreamName string `koanf:"stream_name" validate:"required"`
 }
 
 type IntegrationConfig struct {

@@ -650,12 +650,12 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "name": {
+                        "key": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "name"
+                        "key"
                       ]
                     }
                   }

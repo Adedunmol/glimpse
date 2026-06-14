@@ -11,6 +11,7 @@ async def handle_job(job: dict):
         "event_id": "...",
         "image_key": "s3://bucket/path.jpg",
         "type": "face_detect" | "embedding" | "cluster"
+        "callback_url": "http://app:8080/uploads/callback"
     }
     """
     logger.info("Processing job: %s", job)

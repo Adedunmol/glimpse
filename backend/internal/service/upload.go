@@ -13,6 +13,7 @@ import (
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 type UploadService struct {
@@ -156,12 +157,25 @@ func (s *UploadService) CompletePhotosUpload(ctx echo.Context, userID string, pa
 		return err
 	}
 
-	// TODO: enqueue the upload id to be picked up by the workers
+	// TODO: add the upload id to the stream to be picked up by the workers
+	id, err := s.server.Redis.XAdd(ctx.Request().Context(), &redis.XAddArgs{
+		Stream: s.server.Config.Redis.StreamName,
+		Values: map[string]interface{}{
+			"upload_id":            payload.UploadID,
+			"pictures_count":       len(payload.Files),
+			"confidence_threshold": 0.6,
+		},
+	}).Result()
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to add data to stream")
+		return err
+	}
 
 	eventLogger := middleware.GetLogger(ctx)
 	eventLogger.Info().
 		Str("event", "photos_upload").
 		Str("upload_id", payload.UploadID).
+		Str("stream_id", id).
 		Msg("Photos uploaded successfully")
 
 	return nil
