@@ -61,7 +61,7 @@ class QueueConsumer:
     async def _process_message(self, message_id: str, data: dict, handler):
         try:
             logger.info("Received message %s: %s", message_id, data)
-            await handler(data)
+            await handler(data, self._client)
         except Exception:
             logger.exception("Failed to process message %s", message_id)
 

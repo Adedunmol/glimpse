@@ -10,7 +10,7 @@ async def handle_job(job: dict):
     {
         "event_id": "...",
         "image_key": "s3://bucket/path.jpg",
-        "type": "face_detect" | "embedding" | "cluster"
+        "type": "process_image" | "cluster_event"
         "callback_url": "http://app:8080/uploads/callback"
     }
     """
@@ -18,23 +18,16 @@ async def handle_job(job: dict):
 
     job_type = job.get("type")
 
-    if job_type == "face_detect":
-        await _handle_face_detect(job)
-    elif job_type == "embedding":
-        await _handle_embedding(job)
-    elif job_type == "cluster":
+    if job_type == "process_image":
+        await _handle_process_image(job)
+    elif job_type == "cluster_event":
         await _handle_cluster(job)
     else:
         logger.warning("Unknown job type: %s", job_type)
 
 
-async def _handle_face_detect(job: dict):
+async def _handle_process_image(job: dict):
     # TODO: download image, run face detection
-    pass
-
-
-async def _handle_embedding(job: dict):
-    # TODO: generate face/body embeddings
     pass
 
 

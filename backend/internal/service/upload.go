@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 
 	"github.com/Adedunmol/glimpse/internal/lib/aws"
 	"github.com/Adedunmol/glimpse/internal/middleware"
@@ -151,31 +152,40 @@ func (s *UploadService) GetPresignedUrls(ctx echo.Context, userID string, payloa
 func (s *UploadService) CompletePhotosUpload(ctx echo.Context, userID string, payload *photo.CompletePhotosPayload) error {
 	logger := middleware.GetLogger(ctx)
 
-	err := s.photoRepo.CreatePhotos(ctx.Request().Context(), userID, payload)
+	photos, err := s.photoRepo.CreatePhotos(ctx.Request().Context(), userID, payload)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create photos upload")
 		return err
 	}
 
-	// TODO: add the upload id to the stream to be picked up by the workers
-	id, err := s.server.Redis.XAdd(ctx.Request().Context(), &redis.XAddArgs{
-		Stream: s.server.Config.Redis.StreamName,
-		Values: map[string]interface{}{
-			"upload_id":            payload.UploadID,
-			"pictures_count":       len(payload.Files),
-			"confidence_threshold": 0.6,
-		},
-	}).Result()
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to add data to stream")
-		return err
+	total := len(photos)
+	totalKey := fmt.Sprintf("event:%s:total", payload.UploadID)
+	if err := s.server.Redis.Set(ctx.Request().Context(), totalKey, total, 24*time.Hour).Err(); err != nil {
+		return fmt.Errorf("failed to set total count: %w", err)
+	}
+
+	// add the upload id to the stream to be picked up by the workers
+	for _, photo := range photos {
+		err := s.server.Redis.XAdd(ctx.Request().Context(), &redis.XAddArgs{
+			Stream: s.server.Config.Redis.StreamName,
+			Values: map[string]interface{}{
+				"type":      "process_image",
+				"upload_id": payload.UploadID,
+				"image_id":  photo.ID.String(),
+				"s3_key":    photo.StorageKey,
+			},
+		}).Err()
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to add data to stream")
+			return nil
+		}
 	}
 
 	eventLogger := middleware.GetLogger(ctx)
 	eventLogger.Info().
 		Str("event", "photos_upload").
 		Str("upload_id", payload.UploadID).
-		Str("stream_id", id).
+		Str("user_id", userID).
 		Msg("Photos uploaded successfully")
 
 	return nil
