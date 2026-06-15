@@ -7,7 +7,7 @@ REDIS_URL = os.getenv("GLIMPSE_REDIS_URL", "redis://localhost:6379/0")
 QUEUE_NAME = os.getenv("GLIMPSE_QUEUE_NAME", "ml:jobs")
 STREAM_NAME = os.getenv("STREAM_NAME", "image-tasks")
 
-DATABASE_URL = os.getenv("GLIMPSE_DATABASE_URL")
+DATABASE_URL = os.getenv("GLIMPSE_DATABASE_URL", "postgresql+asyncpg://postgres:postgres@db:5432/glimpse")
 
 AWS_ACCESS_KEY = os.getenv("GLIMPSE_AWS_ACCESS_KEY_ID")
 AWS_SECRET_KEY = os.getenv("GLIMPSE_AWS_SECRET_ACCESS_KEY")
