@@ -72,6 +72,8 @@ services:
     depends_on:
       - redis
     restart: unless-stopped
+    volumes:
+      - insightface-models:/root/.insightface
 
 volumes:
   postgres_data:
@@ -79,3 +81,4 @@ volumes:
   seaweedfs_data:
   go-cache:
   air-tmp:
+  insightface-models:
