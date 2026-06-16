@@ -1,10 +1,11 @@
 import logging
-import cv2
+import io
 import numpy as np
 from insightface.app import FaceAnalysis
 from storage.s3 import download_image
 from processing.trigger import check_and_trigger_clustering
 from db.repository import save_face_embeddings, mark_image_processed
+from PIL import Image
 
 
 logger = logging.getLogger(__name__)
@@ -18,10 +19,14 @@ async def process_image(image_id: str, event_id: str, s3_key: str, redis_client)
     raw = await download_image(s3_key)
 
     # Convert bytes → numpy array → BGR image for InsightFace
-    image_array = np.frombuffer(raw, dtype=np.uint8)
-    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    # image_array = np.frombuffer(raw, dtype=np.uint8)
+    # image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
-    faces = _app.get(image)
+    image = Image.open(io.BytesIO(raw)).convert("RGB")
+    image_array = np.array(image)[:, :, ::-1]  # RGB -> BGR for InsightFace
+
+
+    faces = _app.get(image_array)
 
     if not faces:
         logger.info("No faces detected in image %s", image_id)
