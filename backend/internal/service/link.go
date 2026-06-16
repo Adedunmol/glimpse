@@ -16,7 +16,7 @@ type LinkService struct {
 	linkRepo *repository.LinkRepository
 }
 
-func NewLinkRepository(srv *server.Server, linkRepo *repository.LinkRepository) *LinkService {
+func NewLinkService(srv *server.Server, linkRepo *repository.LinkRepository) *LinkService {
 	return &LinkService{
 		server:   srv,
 		linkRepo: linkRepo,
@@ -33,8 +33,28 @@ func (s *LinkService) GetLinkByID(ctx context.Context, logger *zerolog.Logger, u
 	return linkItem, nil
 }
 
-func (s *LinkService) GetLinks(ctx context.Context, logger *zerolog.Logger, userID string, query link.GetLinksQuery) (*model.PaginatedResponse[link.Link], error) {
+func (s *LinkService) GetLinkByToken(ctx context.Context, logger *zerolog.Logger, userID, token string) (*link.Link, error) {
+	linkItem, err := s.linkRepo.GetLinkByToken(ctx, userID, token)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch link")
+		return nil, err
+	}
+
+	return linkItem, nil
+}
+
+func (s *LinkService) GetLinks(ctx context.Context, logger *zerolog.Logger, userID string, query *link.GetLinksQuery) (*model.PaginatedResponse[link.Link], error) {
 	links, err := s.linkRepo.GetLinks(ctx, userID, query)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to fetch links")
+		return nil, err
+	}
+
+	return links, err
+}
+
+func (s *LinkService) GetLinksByCusterID(ctx context.Context, logger *zerolog.Logger, userID string, clusterID uuid.UUID, query *link.GetLinksQuery) (*model.PaginatedResponse[link.Link], error) {
+	links, err := s.linkRepo.GetLinksByClusterID(ctx, userID, clusterID, query)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch links")
 		return nil, err

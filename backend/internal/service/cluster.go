@@ -33,7 +33,7 @@ func (s *ClusterService) GetClusterByID(ctx context.Context, logger *zerolog.Log
 	return clusterItem, nil
 }
 
-func (s *ClusterService) GetClusters(ctx context.Context, logger *zerolog.Logger, userID string, query cluster.GetClustersQuery) (*model.PaginatedResponse[cluster.Cluster], error) {
+func (s *ClusterService) GetClusters(ctx context.Context, logger *zerolog.Logger, userID string, query *cluster.GetClustersQuery) (*model.PaginatedResponse[cluster.Cluster], error) {
 	clusters, err := s.clusterRepo.GetClusters(ctx, userID, query)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to fetch clusters")

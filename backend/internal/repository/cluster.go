@@ -54,7 +54,7 @@ func (c *ClusterRepository) GetClusterByID(ctx context.Context, userID string, c
 	return &clusterItem, nil
 }
 
-func (c *ClusterRepository) GetClusters(ctx context.Context, userID string, query cluster.GetClustersQuery) (*model.PaginatedResponse[cluster.Cluster], error) {
+func (c *ClusterRepository) GetClusters(ctx context.Context, userID string, query *cluster.GetClustersQuery) (*model.PaginatedResponse[cluster.Cluster], error) {
 	stmt := `
 		SELECT
 			c.*

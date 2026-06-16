@@ -27,7 +27,7 @@ export const uploadContract = c.router(
             },
             metadata: metadata
         },
-        
+
         createUpload: {
         summary: "Create a new upload",
         path: "/uploads",
