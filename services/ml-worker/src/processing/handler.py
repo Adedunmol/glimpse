@@ -22,11 +22,11 @@ async def handle_job(data: dict, redis_client):
 async def _handle_process_image(data: dict, redis_client):
     await process_image(
         image_id=data["image_id"],
-        event_id=data["event_id"],
+        event_id=data["upload_id"],
         s3_key=data["s3_key"],
         redis_client=redis_client,
     )
 
 
 async def _handle_cluster(data: dict):
-    await cluster_event(event_id=data["event_id"])
+    await cluster_event(event_id=data["upload_id"])
