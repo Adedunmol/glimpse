@@ -16,6 +16,7 @@ type Services struct {
 	ClerkService   *ClerkService
 	ClusterService *ClusterService
 	LinkService    *LinkService
+	DeviceService  *DeviceService
 }
 
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
@@ -24,6 +25,7 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 	clusterService := NewClusterService(s, repos.Cluster)
 	linkService := NewLinkService(s, repos.Link)
 	awsClient, err := aws.NewAWS(s) // TODO: embed in photo service
+	deviceService := NewDeviceService(s, repos.Device)
 	if err != nil {
 		return nil, fmt.Errorf("error creating aws client: %w", err)
 	}
@@ -35,5 +37,6 @@ func NewServices(s *server.Server, repos *repository.Repositories) (*Services, e
 		ClerkService:   clerkService,
 		ClusterService: clusterService,
 		LinkService:    linkService,
+		DeviceService:  deviceService,
 	}, nil
 }
