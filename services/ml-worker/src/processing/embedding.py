@@ -1,18 +1,18 @@
 import logging
 import io
+import asyncio
 import numpy as np
 from insightface.app import FaceAnalysis
 from storage.s3 import download_image
 from processing.trigger import check_and_trigger_clustering
 from db.repository import save_face_embeddings, mark_image_processed
 from PIL import Image
-
+from executor import cpu_executor
 
 logger = logging.getLogger(__name__)
 
 _app = FaceAnalysis(name="buffalo_l", providers=["CPUExecutionProvider"])
 _app.prepare(ctx_id=0, det_size=(640, 640))
-
 
 async def process_image(image_id: str, event_id: str, s3_key: str, redis_client):
     logger.info("processing image")
@@ -26,7 +26,8 @@ async def process_image(image_id: str, event_id: str, s3_key: str, redis_client)
     image_array = np.array(image)[:, :, ::-1]  # RGB -> BGR for InsightFace
 
 
-    faces = _app.get(image_array)
+    loop = asyncio.get_running_loop()
+    faces = await loop.run_in_executor(cpu_executor, _app.get, image_array)
 
     if not faces:
         logger.info("No faces detected in image %s", image_id)

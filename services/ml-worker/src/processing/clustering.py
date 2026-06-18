@@ -1,9 +1,10 @@
 import logging
 import json
+import asyncio
 import numpy as np
 from sklearn.cluster import DBSCAN
 from db.repository import fetch_embeddings_for_upload, save_cluster_labels
-
+from executor import cpu_executor
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,9 @@ async def cluster_upload(upload_id: str):
     embeddings = np.array([json.loads(row["embedding"]) for row in rows])
 
     db = DBSCAN(eps=0.4, min_samples=1, metric="cosine")
-    labels = db.fit_predict(embeddings)
+
+    loop = asyncio.get_running_loop()
+    labels = await loop.run_in_executor(cpu_executor, db.fit_predict, embeddings)
 
     cluster_count = len(set(labels)) - (1 if -1 in labels else 0)
     logger.info(
