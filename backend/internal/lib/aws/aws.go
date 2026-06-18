@@ -2,7 +2,6 @@ package aws
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -46,10 +45,6 @@ func NewAWS(server *server.Server) (*AWS, error) {
 	}
 
 	s3Client := NewS3Client(server, cfg)
-
-	if err := s3Client.EnsureBucket(context.TODO(), awsConfig.UploadBucket); err != nil {
-		return nil, fmt.Errorf("ensuring s3 bucket %q: %w", awsConfig.UploadBucket, err)
-	}
 
 	return &AWS{
 		S3: s3Client,

@@ -19,6 +19,18 @@ The project uses Docker for local development. To start all required services (a
 task docker:up-dev
 ```
 
+### Initial S3 Setup
+
+Before uploading files, create the required S3 bucket:
+
+```bash
+task s3:create-bucket
+```
+
+This command only needs to be run once for a new local environment.
+
+Once the services are running and the S3 bucket has been created, the API will be available on the configured application port.
+
 Once the services are running: 
 
 - The API will be available on the configured application port.
