@@ -1,6 +1,6 @@
 import logging
 from processing.embedding import process_image
-from processing.clustering import cluster_event
+from processing.clustering import cluster_upload
 
 
 logger = logging.getLogger(__name__)
@@ -29,4 +29,4 @@ async def _handle_process_image(data: dict, redis_client):
 
 
 async def _handle_cluster(data: dict):
-    await cluster_event(event_id=data["upload_id"])
+    await cluster_upload(upload_id=data["upload_id"])

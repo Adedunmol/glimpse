@@ -22,6 +22,6 @@ async def check_and_trigger_clustering(client, event_id: str):
     if processed >= int(total):
         acquired = await client.set(lock_key, 1, nx=True, ex=60)
         if acquired:
-            await client.xadd(STREAM_NAME, {"type": "cluster_event", "event_id": event_id})
+            await client.xadd(STREAM_NAME, {"type": "cluster_event", "upload_id": event_id})
             logger.info("Pushed cluster_event for event %s", event_id)
             await client.delete(total_key, processed_key)
