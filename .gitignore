@@ -58,3 +58,6 @@ tsconfig.tsbuildinfo
 .vscode
 
 glimpse.exe
+
+# Python related
+**/__pycache__/

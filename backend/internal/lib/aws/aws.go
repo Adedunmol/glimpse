@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/Adedunmol/glimpse/internal/server"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -26,26 +25,14 @@ func NewAWS(server *server.Server) (*AWS, error) {
 		)),
 	}
 
-	// Add custom endpoint if provided (for S3-compatible services like Sevalla)
-	if awsConfig.EndpointURL != "" {
-		configOptions = append(configOptions, config.WithEndpointResolverWithOptions(
-			aws.EndpointResolverWithOptionsFunc(func(service, region string,
-				options ...interface{},
-			) (aws.Endpoint, error) {
-				return aws.Endpoint{
-					URL:           awsConfig.EndpointURL,
-					SigningRegion: awsConfig.Region,
-				}, nil
-			}),
-		))
-	}
-
 	cfg, err := config.LoadDefaultConfig(context.TODO(), configOptions...)
 	if err != nil {
 		return nil, err
 	}
 
+	s3Client := NewS3Client(server, cfg)
+
 	return &AWS{
-		S3: NewS3Client(server, cfg),
+		S3: s3Client,
 	}, nil
 }

@@ -50,15 +50,17 @@ type DatabaseConfig struct {
 }
 
 type AWSConfig struct {
-	Region          string `koanf:"region" validate:"required"`
-	AccessKeyID     string `koanf:"access_key_id" validate:"required"`
-	SecretAccessKey string `koanf:"secret_access_key" validate:"required"`
-	UploadBucket    string `koanf:"upload_bucket" validate:"required"`
-	EndpointURL     string `koanf:"endpoint_url"`
+	Region            string `koanf:"region" validate:"required"`
+	AccessKeyID       string `koanf:"access_key_id" validate:"required"`
+	SecretAccessKey   string `koanf:"secret_access_key" validate:"required"`
+	UploadBucket      string `koanf:"upload_bucket" validate:"required"`
+	EndpointURL       string `koanf:"endpoint_url"`
+	PublicEndpointURL string `koanf:"public_endpoint_url"`
 }
 
 type RedisConfig struct {
-	Address string `koanf:"address" validate:"required"`
+	Address    string `koanf:"address" validate:"required"`
+	StreamName string `koanf:"stream_name" validate:"required"`
 }
 
 type IntegrationConfig struct {

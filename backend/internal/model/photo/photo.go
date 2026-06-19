@@ -16,6 +16,7 @@ type Photo struct {
 	UploadID   string `json:"uploadId" db:"upload_id"`
 	StorageKey string `json:"storageKey" db:"storage_key"`
 	Status     Status `json:"status" db:"status"`
+	IsEmbedded bool   `json:"isEmbedded" db:"is_embedded"`
 }
 
 type PresignedURL struct {

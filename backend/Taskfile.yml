@@ -86,3 +86,13 @@ tasks:
       - docker compose -f docker-compose.dev.yml up  --build
 
 # Docker tasks end
+
+# s3-related
+  s3:create-bucket:
+      desc: Create the upload bucket in SeaweedFS (run once after a fresh setup). Ensure the aws cli tool is installed.
+      cmds:
+        - echo 'Creating an s3 bucket...'
+        - aws s3api create-bucket --bucket {{.BUCKET}} --endpoint-url {{.S3_ENDPOINT}}
+      vars:
+        BUCKET: '{{.BUCKET | default "glimpse"}}'
+        S3_ENDPOINT: '{{.S3_ENDPOINT | default "http://localhost:8333"}}'
