@@ -2,6 +2,8 @@ import logging
 import io
 import asyncio
 import numpy as np
+from sqlalchemy import text
+from db.connection import get_db
 from insightface.app import FaceAnalysis
 from storage.s3 import download_image
 from processing.trigger import check_and_trigger_clustering
@@ -16,6 +18,17 @@ _app.prepare(ctx_id=0, det_size=(640, 640))
 
 async def process_image(image_id: str, event_id: str, s3_key: str, redis_client):
     logger.info("processing image")
+
+    async with get_db() as conn:
+        already_processed = await conn.scalar(
+            text("SELECT is_embedded FROM photos WHERE id = :image_id"),
+            {"image_id": image_id},
+        )
+
+    if already_processed:
+        logger.info("Image %s already embedded, skipping", image_id)
+        return
+
     raw = await download_image(s3_key)
 
     # Convert bytes → numpy array → BGR image for InsightFace
