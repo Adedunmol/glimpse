@@ -12,6 +12,7 @@ type Handlers struct {
 	Clerk   *ClerkWebHookHandler
 	Cluster *ClusterHandler
 	Link    *LinkHandler
+	Device  *DeviceHandler
 }
 
 func NewHandlers(s *server.Server, services *service.Services) *Handlers {
@@ -27,5 +28,6 @@ func NewHandlers(s *server.Server, services *service.Services) *Handlers {
 		Clerk:   clerk,
 		Cluster: NewClusterHandler(s, services.ClusterService),
 		Link:    NewLinkHandler(s, services.LinkService),
+		Device:  NewDeviceHandler(s, services.DeviceService),
 	}
 }

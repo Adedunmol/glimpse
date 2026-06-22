@@ -9,3 +9,4 @@ export * from "./upload/index.js";
 export * from "./clerk.js";
 export * from "./cluster/index.js"
 export * from "./link/index.js"
+export * from "./device.js"
