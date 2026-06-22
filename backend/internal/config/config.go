@@ -22,6 +22,7 @@ type Config struct {
 	Observability *ObservabilityConfig `koanf:"observability"`
 	Clerk         Clerk                `koanf:"clerk" validate:"required"`
 	AWS           AWSConfig            `koanf:"aws" validate:"required"`
+	FCM           FCMConfig            `koanf:"fcm" validate:"required"`
 }
 
 type Primary struct {
@@ -73,6 +74,11 @@ type AuthConfig struct {
 
 type Clerk struct {
 	WebHookAuthorizationSecret string `koanf:"web_hook_authorization_secret" validate:"required"`
+}
+
+type FCMConfig struct {
+	CredentialPath string `koanf:"credential_path" validate:"required"`
+	ProjectID      string `koanf:"project_id" validate:"required"`
 }
 
 func LoadConfig() (*Config, error) {
