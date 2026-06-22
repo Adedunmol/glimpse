@@ -9,7 +9,7 @@ from storage.s3 import download_image
 from processing.trigger import check_and_trigger_clustering
 from db.repository import save_face_embeddings, mark_image_processed
 from PIL import Image
-from executor import cpu_executor
+from .executor import cpu_executor
 
 logger = logging.getLogger(__name__)
 

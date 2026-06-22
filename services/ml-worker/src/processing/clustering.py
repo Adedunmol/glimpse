@@ -4,7 +4,7 @@ import asyncio
 import numpy as np
 from sklearn.cluster import DBSCAN
 from db.repository import fetch_embeddings_for_upload, save_cluster_labels
-from executor import cpu_executor
+from .executor import cpu_executor
 
 logger = logging.getLogger(__name__)
 
