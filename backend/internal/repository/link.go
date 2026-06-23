@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Adedunmol/glimpse/internal/model"
 	"github.com/Adedunmol/glimpse/internal/model/link"
@@ -21,6 +22,55 @@ func NewLinkRepository(srv *server.Server) *LinkRepository {
 	return &LinkRepository{
 		server: srv,
 	}
+}
+
+func (l *LinkRepository) CreateLink(ctx context.Context, userID string, payload *link.CreateLinkPayload) (*link.Link, error) {
+	isPasswordProtected := false
+	if payload.IsPasswordProtected != nil {
+		isPasswordProtected = *payload.IsPasswordProtected
+	}
+
+	isActive := true
+	if payload.IsActive != nil {
+		isActive = *payload.IsActive
+	}
+
+	expiresAt := time.Now().Add(30 * 24 * time.Hour)
+	if payload.ExpiresAt != nil {
+		expiresAt = *payload.ExpiresAt
+	}
+
+	query := `
+		INSERT INTO links (cluster_id, token, is_password_protected, password_hash, expires_at, is_active)
+		VALUES (@cluster_id, @token, @is_password_protected, @password_hash, @expires_at, @is_active)
+		ON CONFLICT (token) DO UPDATE SET
+			is_password_protected = EXCLUDED.is_password_protected,
+			password_hash         = EXCLUDED.password_hash,
+			expires_at            = EXCLUDED.expires_at,
+			is_active             = EXCLUDED.is_active,
+			updated_at            = CURRENT_TIMESTAMP
+		RETURNING *`
+
+	args := pgx.NamedArgs{
+		"cluster_id":            payload.ClusterID,
+		"token":                 payload.Token,
+		"is_password_protected": isPasswordProtected,
+		"password_hash":         payload.PasswordHash,
+		"expires_at":            expiresAt,
+		"is_active":             isActive,
+	}
+
+	rows, err := l.server.DB.Pool.Query(ctx, query, args)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute upsert query for links cluster_id=%s: %w", payload.ClusterID, err)
+	}
+
+	result, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[link.Link])
+	if err != nil {
+		return nil, fmt.Errorf("failed to collect one row from table:links: %w", err)
+	}
+
+	return result, nil
 }
 
 func (l *LinkRepository) GetLinkByID(ctx context.Context, userID string, linkID uuid.UUID) (*link.Link, error) {

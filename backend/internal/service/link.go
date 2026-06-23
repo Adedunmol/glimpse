@@ -2,8 +2,12 @@ package service
 
 import (
 	"context"
+	"time"
 
+	custom_bcrypt "github.com/Adedunmol/glimpse/internal/lib/bcrypt"
+	"github.com/Adedunmol/glimpse/internal/lib/utils"
 	"github.com/Adedunmol/glimpse/internal/model"
+	"github.com/Adedunmol/glimpse/internal/model/cluster"
 	"github.com/Adedunmol/glimpse/internal/model/link"
 	"github.com/Adedunmol/glimpse/internal/repository"
 	"github.com/Adedunmol/glimpse/internal/server"
@@ -21,6 +25,45 @@ func NewLinkService(srv *server.Server, linkRepo *repository.LinkRepository) *Li
 		server:   srv,
 		linkRepo: linkRepo,
 	}
+}
+
+func (s *LinkService) CreateLink(ctx context.Context, logger *zerolog.Logger, userID string, payload *cluster.CreateLinkCommand) (*link.Link, error) {
+	linkToken := utils.GenerateToken()
+
+	var passwordHash *string
+	isPasswordProtected := false
+	if payload.Password != "" {
+		hash, err := custom_bcrypt.HashPassword(payload.Password)
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to hash password")
+			return nil, err
+		}
+		passwordHash = &hash
+		isPasswordProtected = true
+	}
+
+	expiresAt := time.Now().Add(time.Hour * 24 * 30) // 30 days
+	if payload.ExpiresAt != nil {
+		expiresAt = *payload.ExpiresAt
+	}
+
+	isActive := true
+	linkPayload := &link.CreateLinkPayload{
+		ClusterID:           payload.ClusterID,
+		Token:               linkToken,
+		IsPasswordProtected: &isPasswordProtected,
+		PasswordHash:        passwordHash,
+		ExpiresAt:           &expiresAt,
+		IsActive:            &isActive,
+	}
+
+	linkItem, err := s.linkRepo.CreateLink(ctx, userID, linkPayload)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create link item")
+		return nil, err
+	}
+
+	return linkItem, nil
 }
 
 func (s *LinkService) GetLinkByID(ctx context.Context, logger *zerolog.Logger, userID string, linkID uuid.UUID) (*link.Link, error) {

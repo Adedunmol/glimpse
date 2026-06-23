@@ -24,8 +24,9 @@ type Services struct {
 func NewServices(s *server.Server, repos *repository.Repositories) (*Services, error) {
 	authService := NewAuthService(s)
 	clerkService := NewClerkService(s, repos.UserRepository)
-	clusterService := NewClusterService(s, repos.Cluster)
 	linkService := NewLinkService(s, repos.Link)
+	//cluster service depends on link service to create links
+	clusterService := NewClusterService(s, repos.Cluster, linkService)
 	awsClient, err := aws.NewAWS(s) // TODO: embed in photo service
 	if err != nil {
 		return nil, fmt.Errorf("error creating aws client: %w", err)
