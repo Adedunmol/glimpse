@@ -3,19 +3,19 @@ package handler
 import (
 	"net/http"
 
+	"github.com/Adedunmol/glimpse/internal/lib/notification"
 	"github.com/Adedunmol/glimpse/internal/middleware"
 	"github.com/Adedunmol/glimpse/internal/model/user_device"
 	"github.com/Adedunmol/glimpse/internal/server"
-	"github.com/Adedunmol/glimpse/internal/service"
 	"github.com/labstack/echo/v4"
 )
 
 type DeviceHandler struct {
 	Handler
-	deviceService *service.DeviceService
+	deviceService *notification.DeviceService
 }
 
-func NewDeviceHandler(s *server.Server, deviceService *service.DeviceService) *DeviceHandler {
+func NewDeviceHandler(s *server.Server, deviceService *notification.DeviceService) *DeviceHandler {
 	return &DeviceHandler{
 		Handler:       NewHandler(s),
 		deviceService: deviceService,
