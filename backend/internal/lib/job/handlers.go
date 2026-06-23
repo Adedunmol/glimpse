@@ -47,3 +47,19 @@ func (j *JobService) handleWelcomeEmailTask(ctx context.Context, t *asynq.Task) 
 		Msg("Successfully sent welcome email")
 	return nil
 }
+
+func (j *JobService) handleLinkCleanup(ctx context.Context, t *asynq.Task) error {
+	stmt := `UPDATE links SET is_active = false WHERE expires_at <= now() AND is_active = true`
+
+	result, err := j.db.Exec(ctx, stmt)
+	if err != nil {
+		j.logger.Error().Err(err).Msg("failed to deactivate expired links")
+		return fmt.Errorf("failed to deactivate expired links: %w", err)
+	}
+
+	j.logger.Info().
+		Int64("deactivated", result.RowsAffected()).
+		Msg("link cleanup completed")
+
+	return nil
+}

@@ -52,7 +52,7 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerPkg.Lo
 	}
 
 	// job service
-	jobService := job.NewJobService(logger, cfg)
+	jobService := job.NewJobService(logger, cfg, db.Pool)
 	jobService.InitHandlers(cfg, logger)
 
 	// Start job server
