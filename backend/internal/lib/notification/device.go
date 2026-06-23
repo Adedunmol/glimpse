@@ -1,25 +1,21 @@
-package service
+package notification
 
 import (
 	"context"
 	"errors"
 
 	"github.com/Adedunmol/glimpse/internal/model/user_device"
-	"github.com/Adedunmol/glimpse/internal/repository"
-	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/rs/zerolog"
 )
 
 var EmptyFcmTokenErr error = errors.New("fcm token is empty")
 
 type DeviceService struct {
-	server     *server.Server
-	deviceRepo *repository.DeviceRepository
+	deviceRepo *DeviceRepository
 }
 
-func NewDeviceService(server *server.Server, deviceRepo *repository.DeviceRepository) *DeviceService {
+func NewDeviceService(deviceRepo *DeviceRepository) *DeviceService {
 	return &DeviceService{
-		server:     server,
 		deviceRepo: deviceRepo,
 	}
 }

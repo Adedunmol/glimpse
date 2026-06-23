@@ -63,3 +63,50 @@ func (j *JobService) handleLinkCleanup(ctx context.Context, t *asynq.Task) error
 
 	return nil
 }
+
+func (j *JobService) PublishNotification(ctx context.Context, taskType, userID, title, message string) error {
+	task, err := NewNotificationTask(taskType, userID, title, message)
+	if err != nil {
+		j.logger.Error().Err(err).Msg("failed to create notifical task")
+		return err
+	}
+
+	_, err = j.Client.EnqueueContext(ctx, task,
+		asynq.Queue(CriticalPriority),
+		asynq.MaxRetry(3),
+	)
+
+	return nil
+}
+
+func (j *JobService) handleNotificationTask(ctx context.Context, t *asynq.Task) error {
+	var p NotificationPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return fmt.Errorf("failed to unmarshal notification payload: %w", err)
+	}
+
+	j.logger.Info().
+		Str("type", t.Type()).
+		Str("userId", p.UserID).
+		Msg("processing notification task")
+
+	if err := j.notificationService.SendToUser(ctx, p.UserID, p.Title, p.Message); err != nil {
+		j.logger.Error().
+			Str("type", t.Type()).
+			Str("userId", p.UserID).
+			Err(err).
+			Msg("failed to send notification")
+		return err
+	}
+
+	j.logger.Info().
+		Str("type", t.Type()).
+		Str("userId", p.UserID).
+		Msg("notification sent successfully")
+
+	return nil
+}
+
+func (j *JobService) consumeMLStream(ctx context.Context) {
+
+}

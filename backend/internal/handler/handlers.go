@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/Adedunmol/glimpse/internal/lib/notification"
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/Adedunmol/glimpse/internal/service"
 )
@@ -15,7 +16,7 @@ type Handlers struct {
 	Device  *DeviceHandler
 }
 
-func NewHandlers(s *server.Server, services *service.Services) *Handlers {
+func NewHandlers(s *server.Server, services *service.Services, deviceService *notification.DeviceService) *Handlers {
 	clerk, err := NewClerkWebHookHandler(s, services.ClerkService)
 	if err != nil {
 		s.Logger.Error().Err(err).Msg("error initializing clerk webhook handler")
@@ -28,6 +29,6 @@ func NewHandlers(s *server.Server, services *service.Services) *Handlers {
 		Clerk:   clerk,
 		Cluster: NewClusterHandler(s, services.ClusterService),
 		Link:    NewLinkHandler(s, services.LinkService),
-		Device:  NewDeviceHandler(s, services.DeviceService),
+		Device:  NewDeviceHandler(s, deviceService),
 	}
 }

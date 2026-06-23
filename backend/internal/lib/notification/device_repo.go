@@ -1,4 +1,4 @@
-package repository
+package notification
 
 import (
 	"context"
@@ -6,19 +6,19 @@ import (
 
 	"github.com/Adedunmol/glimpse/internal/errs"
 	"github.com/Adedunmol/glimpse/internal/model/user_device"
-	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var DeviceNotFound = "DEVICE_NOT_FOUND"
 
 type DeviceRepository struct {
-	server *server.Server
+	db *pgxpool.Pool
 }
 
-func NewDeviceRepository(server *server.Server) *DeviceRepository {
+func NewDeviceRepository(db *pgxpool.Pool) *DeviceRepository {
 	return &DeviceRepository{
-		server: server,
+		db: db,
 	}
 }
 
@@ -35,7 +35,7 @@ func (r *DeviceRepository) UpsertDevice(ctx context.Context, userID, fcmToken, p
 		RETURNING
 			*
 	`
-	rows, err := r.server.DB.Pool.Query(ctx, stmt, pgx.NamedArgs{
+	rows, err := r.db.Query(ctx, stmt, pgx.NamedArgs{
 		"userId":    userID,
 		"pushToken": fcmToken,
 		"platform":  platform,
@@ -62,7 +62,7 @@ func (r *DeviceRepository) GetUserTokens(ctx context.Context, userID string) ([]
 			user_id = @userId
 		LIMIT 100
 	`
-	rows, err := r.server.DB.Pool.Query(ctx, stmt, pgx.NamedArgs{
+	rows, err := r.db.Query(ctx, stmt, pgx.NamedArgs{
 		"userId": userID,
 	})
 	if err != nil {
@@ -84,7 +84,7 @@ func (r *DeviceRepository) DeleteDevice(ctx context.Context, userID, deviceToken
 			user_id = @userId AND push_token = @deviceToken
 	`
 
-	result, err := r.server.DB.Pool.Exec(ctx, stmt, pgx.NamedArgs{
+	result, err := r.db.Exec(ctx, stmt, pgx.NamedArgs{
 		"userId":      userID,
 		"deviceToken": deviceToken,
 	})
@@ -112,7 +112,7 @@ func (r *DeviceRepository) DeleteBulkDevice(ctx context.Context, userID string, 
 					user_id = @userId AND push_token = ANY(@deviceTokens)
     `
 
-	result, err := r.server.DB.Pool.Exec(ctx, stmt, pgx.NamedArgs{
+	result, err := r.db.Exec(ctx, stmt, pgx.NamedArgs{
 		"userId":       userID,
 		"deviceTokens": deviceTokens,
 	})
