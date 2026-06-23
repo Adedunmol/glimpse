@@ -11,5 +11,7 @@ func registerClusterRoutes(r *echo.Group, h *handler.ClusterHandler, auth *middl
 	clusterGroup.Use(auth.RequireAuth)
 
 	clusterGroup.GET("", h.GetClusters)
-	clusterGroup.GET("/:clusterId", h.GetClusterID)
+	dynamic := clusterGroup.Group("/:clusterId")
+	dynamic.GET("", h.GetClusterID)
+	dynamic.POST("/links", h.CreateLink)
 }
