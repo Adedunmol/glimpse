@@ -6,6 +6,7 @@ import (
 	"github.com/Adedunmol/glimpse/internal/middleware"
 	"github.com/Adedunmol/glimpse/internal/model"
 	"github.com/Adedunmol/glimpse/internal/model/cluster"
+	"github.com/Adedunmol/glimpse/internal/model/link"
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/Adedunmol/glimpse/internal/service"
 	"github.com/labstack/echo/v4"
@@ -21,6 +22,21 @@ func NewClusterHandler(s *server.Server, clusterService *service.ClusterService)
 		Handler:        NewHandler(s),
 		clusterService: clusterService,
 	}
+}
+
+func (h *ClusterHandler) CreateLink(c echo.Context) error {
+	return Handle(
+		h.Handler,
+		func(c echo.Context, payload *cluster.CreateLinkCommand) (*link.Link, error) {
+			userID := middleware.GetUserID(c)
+			logger := middleware.GetLogger(c)
+
+			return h.clusterService.CreateClusterLink(c.Request().Context(), logger, userID, payload)
+
+		},
+		http.StatusCreated,
+		&cluster.CreateLinkCommand{},
+	)(c)
 }
 
 func (h *ClusterHandler) GetClusterID(c echo.Context) error {

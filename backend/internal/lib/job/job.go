@@ -1,40 +1,66 @@
 package job
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/Adedunmol/glimpse/internal/config"
+	"github.com/Adedunmol/glimpse/internal/lib/notification"
 	"github.com/hibiken/asynq"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 )
 
+const (
+	TaskLinkCleanup  = "link:cleanup"
+	CriticalPriority = "critical"
+	DefaultPriority  = "default"
+	LowPriority      = "low"
+)
+
 type JobService struct {
-	Client *asynq.Client
-	server *asynq.Server
-	logger *zerolog.Logger
+	Client              *asynq.Client
+	server              *asynq.Server
+	scheduler           *asynq.Scheduler
+	logger              *zerolog.Logger
+	db                  *pgxpool.Pool
+	notificationService *notification.NotificationService
+	redisClient         *redis.Client
+	streamName          string
 }
 
-func NewJobService(logger *zerolog.Logger, cfg *config.Config) *JobService {
+func NewJobService(logger *zerolog.Logger, cfg *config.Config, pool *pgxpool.Pool, redisClient *redis.Client, notification *notification.NotificationService, streamName string) *JobService {
 	redisAddr := cfg.Redis.Address
-
-	client := asynq.NewClient(asynq.RedisClientOpt{
+	redisOpts := asynq.RedisClientOpt{
 		Addr: redisAddr,
-	})
+	}
+
+	client := asynq.NewClient(redisOpts)
 
 	server := asynq.NewServer(
-		asynq.RedisClientOpt{Addr: redisAddr},
+		redisOpts,
 		asynq.Config{
 			Concurrency: 10,
 			Queues: map[string]int{
-				"critical": 6, // Higher priority queue for important emails
-				"default":  3, // Default priority queue for most emails
-				"low":      1, // Lower priority queue for non-urgent emails
+				CriticalPriority: 6, // Higher priority queue for important emails
+				DefaultPriority:  3, // Default priority queue for most emails
+				LowPriority:      1, // Lower priority queue for non-urgent emails
 			},
 		},
 	)
 
+	scheduler := asynq.NewScheduler(redisOpts, nil)
+
 	return &JobService{
-		Client: client,
-		server: server,
-		logger: logger,
+		Client:              client,
+		server:              server,
+		scheduler:           scheduler,
+		logger:              logger,
+		db:                  pool,
+		notificationService: notification,
+		redisClient:         redisClient,
+		streamName:          streamName,
 	}
 }
 
@@ -42,17 +68,32 @@ func (j *JobService) Start() error {
 	// Register task handlers
 	mux := asynq.NewServeMux()
 	mux.HandleFunc(TaskWelcome, j.handleWelcomeEmailTask)
+	mux.HandleFunc(TaskLinkCleanup, j.handleLinkCleanup)
+	mux.HandleFunc(TaskNotifyLinkCreated, j.handleNotificationTask)
+	mux.HandleFunc(TaskNotifyUploadDone, j.handleNotificationTask)
+	mux.HandleFunc(TaskNotifyClusterReady, j.handleNotificationTask)
+
+	if _, err := j.scheduler.Register("@daily", asynq.NewTask(TaskLinkCleanup, nil)); err != nil {
+		return fmt.Errorf("failed to register link cleanup job: %w", err)
+	}
 
 	j.logger.Info().Msg("Starting background job server")
 	if err := j.server.Start(mux); err != nil {
 		return err
 	}
 
+	if err := j.scheduler.Start(); err != nil {
+		return fmt.Errorf("failed to start scheduler: %w", err)
+	}
+
+	go j.consumeMLStream(context.Background())
+
 	return nil
 }
 
 func (j *JobService) Stop() {
 	j.logger.Info().Msg("Stopping background job server")
+	j.scheduler.Shutdown()
 	j.server.Shutdown()
 	j.Client.Close()
 }

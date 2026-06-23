@@ -9,7 +9,6 @@ import (
 
 	"github.com/Adedunmol/glimpse/internal/config"
 	"github.com/Adedunmol/glimpse/internal/database"
-	"github.com/Adedunmol/glimpse/internal/lib/job"
 	loggerPkg "github.com/Adedunmol/glimpse/internal/logger"
 	"github.com/newrelic/go-agent/v3/integrations/nrredis-v9"
 	"github.com/redis/go-redis/v9"
@@ -23,7 +22,6 @@ type Server struct {
 	DB            *database.Database
 	Redis         *redis.Client
 	httpServer    *http.Server
-	Job           *job.JobService
 }
 
 func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerPkg.LoggerService) (*Server, error) {
@@ -52,13 +50,13 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerPkg.Lo
 	}
 
 	// job service
-	jobService := job.NewJobService(logger, cfg)
-	jobService.InitHandlers(cfg, logger)
+	// jobService := job.NewJobService(logger, cfg, db.Pool)
+	// jobService.InitHandlers(cfg, logger)
 
 	// Start job server
-	if err := jobService.Start(); err != nil {
-		return nil, err
-	}
+	// if err := jobService.Start(); err != nil {
+	// 	return nil, err
+	// }
 
 	server := &Server{
 		Config:        cfg,
@@ -66,7 +64,6 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerPkg.Lo
 		LoggerService: loggerService,
 		DB:            db,
 		Redis:         redisClient,
-		Job:           jobService,
 	}
 
 	// Start metrics collection
@@ -105,10 +102,6 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 	if err := s.DB.Close(); err != nil {
 		return fmt.Errorf("failed to close database connection: %w", err)
-	}
-
-	if s.Job != nil {
-		s.Job.Stop()
 	}
 
 	return nil
