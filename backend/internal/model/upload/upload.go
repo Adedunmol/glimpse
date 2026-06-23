@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Adedunmol/glimpse/internal/model"
+	"github.com/Adedunmol/glimpse/internal/model/photo"
 )
 
 type Status string
@@ -22,4 +23,9 @@ type Upload struct {
 	HostID    string    `json:"hostId" db:"host_id"`
 	Status    Status    `json:"status" db:"status"`
 	ExpiresAt time.Time `json:"expiresAt,omitempty" db:"expires_at"`
+}
+
+type PopulatedUpload struct {
+	Upload
+	Photos []photo.Photo `json:"photos" db:"photos"`
 }

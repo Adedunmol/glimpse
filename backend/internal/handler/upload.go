@@ -40,7 +40,7 @@ func (h *UploadHandler) CreateUpload(c echo.Context) error {
 func (h *UploadHandler) GetUploadByID(c echo.Context) error {
 	return Handle(
 		h.Handler,
-		func(c echo.Context, payload *upload.GetUploadByIDPayload) (*upload.Upload, error) {
+		func(c echo.Context, payload *upload.GetUploadByIDPayload) (*upload.PopulatedUpload, error) {
 			userID := middleware.GetUserID(c)
 			return h.uploadService.GetUploadByID(c, userID, payload.ID)
 		},

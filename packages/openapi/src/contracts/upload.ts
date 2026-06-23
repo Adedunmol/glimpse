@@ -23,7 +23,7 @@ export const uploadContract = c.router(
                 status: ZUpload.shape.status.optional()
             }),
             responses: {
-                200: schemaWithPagination(ZUpload)
+                200: schemaWithPagination(ZUpload.omit({ photos: true }))
             },
             metadata: metadata
         },
@@ -48,7 +48,7 @@ export const uploadContract = c.router(
         summary: "Get upload by ID",
         path: "/uploads/:id",
         method: "GET",
-        description: "Get upload by ID",
+        description: "Get upload by ID with associated photos",
         responses: {
             200: ZUpload,
         },
@@ -65,7 +65,7 @@ export const uploadContract = c.router(
             expiresAt: true
         }).partial(),
         responses: {
-            200: ZUpload,
+            200: ZUpload.omit({ photos: true }),
         },
         metadata: metadata,
         },
