@@ -2,12 +2,14 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/Adedunmol/glimpse/internal/errs"
 	"github.com/Adedunmol/glimpse/internal/model"
+	"github.com/Adedunmol/glimpse/internal/model/photo"
 	"github.com/Adedunmol/glimpse/internal/model/upload"
 	"github.com/Adedunmol/glimpse/internal/server"
 	"github.com/google/uuid"
@@ -48,37 +50,51 @@ func (r *UploadRepository) CreateUpload(ctx context.Context, userID string, payl
 	return &uploadItem, nil
 }
 
-func (r *UploadRepository) GetUploadByID(ctx context.Context, userID string, uploadID uuid.UUID) (*upload.Upload, error) {
-	// TODO: create a new model (PopulatedUpload) which contains extra data regarding the upload, such as the number of files in the upload, total size of the upload, etc.
-	// This will be used to return more data to the client without having to make multiple queries to the database.
-	// And also update the query
+func (r *UploadRepository) GetUploadByID(ctx context.Context, userID string, uploadID uuid.UUID) (*upload.PopulatedUpload, error) {
 
 	stmt := `
-		SELECT *
-		FROM uploads
-		WHERE id = @id AND host_id = @host_id
-	`
+			SELECT
+				u.*,
+				COALESCE(
+					json_agg(p.* ORDER BY p.created_at) FILTER (WHERE p.id IS NOT NULL),
+					'[]'
+				) AS photos
+			FROM uploads u
+			LEFT JOIN photos p ON p.upload_id = u.id
+			WHERE u.id = @id AND u.host_id = @host_id
+			GROUP BY u.id
+		`
+
 	rows, err := r.server.DB.Pool.Query(ctx, stmt, pgx.NamedArgs{
 		"id":      uploadID,
 		"host_id": userID,
 	})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute get upload by id query for user_id=%s upload_id=%s: %w", userID, uploadID, err)
 	}
 
-	uploadItem, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[upload.Upload])
+	type populatedUploadRow struct {
+		upload.Upload
+		PhotosJSON json.RawMessage `db:"photos"`
+	}
+
+	row, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[populatedUploadRow])
 	if err != nil {
 		return nil, fmt.Errorf("failed to collect row from table:uploads for user_id=%s upload_id=%s: %w", userID, uploadID, err)
 	}
 
-	return &uploadItem, nil
+	var photos []photo.Photo
+	if err := json.Unmarshal(row.PhotosJSON, &photos); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal photos for upload_id=%s: %w", uploadID, err)
+	}
+
+	return &upload.PopulatedUpload{
+		Upload: row.Upload,
+		Photos: photos,
+	}, nil
 }
 
 func (r *UploadRepository) GetUploads(ctx context.Context, userID string, query *upload.GetUploadsQuery) (*model.PaginatedResponse[upload.Upload], error) {
-	// TODO: create a new model (PopulatedUpload) which contains extra data regarding the upload, such as the number of files in the upload, total size of the upload, etc.
-	// This will be used to return more data to the client without having to make multiple queries to the database.
-	// And also update the query
 
 	stmt := `
 		SELECT *
