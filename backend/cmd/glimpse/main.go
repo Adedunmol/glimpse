@@ -59,7 +59,7 @@ func main() {
 
 	deviceService := notification.NewDeviceService(deviceRepo)
 	notificationService := notification.NewNotificationService(deviceRepo, fcmClient)
-	jobService := job.NewJobService(srv.Logger, cfg, srv.DB.Pool, srv.Redis, notificationService)
+	jobService := job.NewJobService(srv.Logger, cfg, srv.DB.Pool, srv.Redis, notificationService, cfg.Redis.StreamName)
 
 	services, serviceErr := service.NewServices(srv, repos, deviceService, jobService)
 

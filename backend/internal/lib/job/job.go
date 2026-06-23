@@ -1,6 +1,7 @@
 package job
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Adedunmol/glimpse/internal/config"
@@ -26,9 +27,10 @@ type JobService struct {
 	db                  *pgxpool.Pool
 	notificationService *notification.NotificationService
 	redisClient         *redis.Client
+	streamName          string
 }
 
-func NewJobService(logger *zerolog.Logger, cfg *config.Config, pool *pgxpool.Pool, redisClient *redis.Client, notification *notification.NotificationService) *JobService {
+func NewJobService(logger *zerolog.Logger, cfg *config.Config, pool *pgxpool.Pool, redisClient *redis.Client, notification *notification.NotificationService, streamName string) *JobService {
 	redisAddr := cfg.Redis.Address
 	redisOpts := asynq.RedisClientOpt{
 		Addr: redisAddr,
@@ -58,6 +60,7 @@ func NewJobService(logger *zerolog.Logger, cfg *config.Config, pool *pgxpool.Poo
 		db:                  pool,
 		notificationService: notification,
 		redisClient:         redisClient,
+		streamName:          streamName,
 	}
 }
 
@@ -82,6 +85,8 @@ func (j *JobService) Start() error {
 	if err := j.scheduler.Start(); err != nil {
 		return fmt.Errorf("failed to start scheduler: %w", err)
 	}
+
+	go j.consumeMLStream(context.Background())
 
 	return nil
 }
