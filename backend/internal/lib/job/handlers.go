@@ -93,7 +93,7 @@ func (j *JobService) getUpload(ctx context.Context, uploadID string) (*upload.Up
 func (j *JobService) PublishNotification(ctx context.Context, taskType, userID, title, message string) error {
 	task, err := NewNotificationTask(taskType, userID, title, message)
 	if err != nil {
-		j.logger.Error().Err(err).Msg("failed to create notifical task")
+		j.logger.Error().Err(err).Msg("failed to create notification task")
 		return err
 	}
 
