@@ -679,20 +679,23 @@
                       "type": "string"
                     },
                     "uploads": {
-                      "type": "object",
-                      "properties": {
-                        "key": {
-                          "type": "string"
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
                         },
-                        "url": {
-                          "type": "string",
-                          "format": "uri"
-                        }
-                      },
-                      "required": [
-                        "key",
-                        "url"
-                      ]
+                        "required": [
+                          "key",
+                          "url"
+                        ]
+                      }
                     }
                   },
                   "required": [
