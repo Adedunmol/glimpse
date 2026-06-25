@@ -13,6 +13,7 @@ Before getting started, ensure the following tools are installed:
 * Bun
 * Docker & Docker Compose (required by backend services)
 * Go (for backend development)
+* Python
 
 ## Installing Dependencies
 
