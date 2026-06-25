@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+
 	"time"
 
 	"github.com/Adedunmol/glimpse/internal/config"
@@ -87,7 +88,7 @@ func main() {
 		}
 	}()
 
-	//Start job service
+	// Start job service
 	go func() {
 		if err = jobService.Start(); err != nil {
 			log.Fatal().Err(err).Msg("failed to start job service")
@@ -99,7 +100,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultContextTimeout*time.Second)
 	defer cancel()
 
-	//stop job service
+	// stop job service
 	defer jobService.Stop()
 
 	if err = srv.Shutdown(ctx); err != nil {

@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      # dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.dev
     container_name: glimpse_app
     env_file:
       - .env
@@ -17,7 +17,6 @@ services:
         condition: service_started
       seaweedfs:
         condition: service_started
-    command: go run ./cmd/glimpse
     volumes:
       - .:/app
       - go-cache:/root/go/pkg/mod

@@ -306,6 +306,50 @@
                     },
                     "updatedAt": {
                       "type": "string"
+                    },
+                    "photos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "uploadId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "storageKey": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "uploaded"
+                            ]
+                          },
+                          "isEmbedded": {
+                            "type": "boolean"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "uploadId",
+                          "storageKey",
+                          "status",
+                          "isEmbedded",
+                          "createdAt",
+                          "updatedAt"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -315,7 +359,8 @@
                     "status",
                     "expiresAt",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "photos"
                   ]
                 }
               }
@@ -331,7 +376,7 @@
     },
     "/v1/uploads/{id}": {
       "get": {
-        "description": "Get upload by ID",
+        "description": "Get upload by ID with associated photos",
         "summary": "Get upload by ID",
         "tags": [
           "Upload"
@@ -382,6 +427,50 @@
                     },
                     "updatedAt": {
                       "type": "string"
+                    },
+                    "photos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "uploadId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "storageKey": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "uploaded"
+                            ]
+                          },
+                          "isEmbedded": {
+                            "type": "boolean"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "uploadId",
+                          "storageKey",
+                          "status",
+                          "isEmbedded",
+                          "createdAt",
+                          "updatedAt"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -391,7 +480,8 @@
                     "status",
                     "expiresAt",
                     "createdAt",
-                    "updatedAt"
+                    "updatedAt",
+                    "photos"
                   ]
                 }
               }
@@ -589,19 +679,23 @@
                       "type": "string"
                     },
                     "uploads": {
-                      "type": "object",
-                      "properties": {
-                        "key": {
-                          "type": "string"
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          }
                         },
-                        "url": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "key",
-                        "url"
-                      ]
+                        "required": [
+                          "key",
+                          "url"
+                        ]
+                      }
                     }
                   },
                   "required": [

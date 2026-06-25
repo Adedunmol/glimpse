@@ -53,7 +53,7 @@ func (s *UploadService) CreateUpload(ctx echo.Context, userID string, payload *u
 	return uploadItem, nil
 }
 
-func (s *UploadService) GetUploadByID(ctx echo.Context, userID string, uploadID uuid.UUID) (*upload.Upload, error) {
+func (s *UploadService) GetUploadByID(ctx echo.Context, userID string, uploadID uuid.UUID) (*upload.PopulatedUpload, error) {
 	logger := middleware.GetLogger(ctx)
 
 	uploadItem, err := s.uploadRepo.GetUploadByID(ctx.Request().Context(), userID, uploadID)
