@@ -1,10 +1,29 @@
-FROM golang:1.26.4-alpine
-
+# ── base ─────────────────────────────────────────────────────────────────────
+# Shared foundation both dependency stages inherit from.
+FROM golang:1.26.4-alpine AS base
 WORKDIR /app
 
+
+# ── air-install ───────────────────────────────────────────────────────────────
+# Installs the Air hot-reload binary.
+# Runs in parallel with mod-download — no dependency between the two.
+FROM base AS air-install
 RUN go install github.com/air-verse/air@latest
 
+
+# ── mod-download ──────────────────────────────────────────────────────────────
+# Downloads Go modules and seeds the module cache.
+# Runs in parallel with air-install.
+FROM base AS mod-download
 COPY go.mod go.sum ./
 RUN go mod download
 
-CMD [ "air", "-c", ".air.toml"]
+
+# ── final ─────────────────────────────────────────────────────────────────────
+# Pulls the Air binary from air-install and the warm module cache from
+# mod-download. Source code is mounted as a volume at runtime, not copied in.
+FROM mod-download AS final
+
+COPY --from=air-install /go/bin/air /usr/local/bin/air
+
+CMD ["air", "-c", ".air.toml"]

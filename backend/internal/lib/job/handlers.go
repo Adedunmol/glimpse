@@ -150,7 +150,7 @@ func (j *JobService) consumeMLStream(ctx context.Context) {
 				Consumer: "go-worker-1",
 				Streams:  []string{j.streamName, ">"},
 				Count:    10,
-				Block:    5 * time.Second,
+				Block:    0 * time.Second,
 			}).Result()
 
 			if err == redis.Nil {

@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	_ "net/http/pprof" // side-effect: registers /debug/pprof routes
 	"os"
 	"os/signal"
+
 	"time"
 
 	"github.com/Adedunmol/glimpse/internal/config"
@@ -24,6 +26,17 @@ import (
 const DefaultContextTimeout = 30
 
 func main() {
+
+	// go func() {
+	// 	l.Println(http.ListenAndServe("localhost:6060", nil))
+	// }()
+
+	// f, _ := os.Create("cpu.prof")
+	// defer f.Close()
+
+	// pprof.StartCPUProfile(f)
+	// defer pprof.StopCPUProfile()
+
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		panic("failed to load config: " + err.Error())
@@ -87,7 +100,7 @@ func main() {
 		}
 	}()
 
-	//Start job service
+	// Start job service
 	go func() {
 		if err = jobService.Start(); err != nil {
 			log.Fatal().Err(err).Msg("failed to start job service")
@@ -99,7 +112,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultContextTimeout*time.Second)
 	defer cancel()
 
-	//stop job service
+	// stop job service
 	defer jobService.Stop()
 
 	if err = srv.Shutdown(ctx); err != nil {
