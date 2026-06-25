@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	_ "net/http/pprof" // side-effect: registers /debug/pprof routes
 	"os"
 	"os/signal"
 
@@ -26,17 +25,6 @@ import (
 const DefaultContextTimeout = 30
 
 func main() {
-
-	// go func() {
-	// 	l.Println(http.ListenAndServe("localhost:6060", nil))
-	// }()
-
-	// f, _ := os.Create("cpu.prof")
-	// defer f.Close()
-
-	// pprof.StartCPUProfile(f)
-	// defer pprof.StopCPUProfile()
-
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		panic("failed to load config: " + err.Error())
