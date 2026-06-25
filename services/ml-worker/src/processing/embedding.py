@@ -10,11 +10,12 @@ from processing.trigger import check_and_trigger_clustering
 from db.repository import save_face_embeddings, mark_image_processed
 from PIL import Image
 from .executor import cpu_executor
+from config import MODEL_NAME
 
 logger = logging.getLogger(__name__)
 
 _app = FaceAnalysis(
-        name="buffalo_sc", # "buffalo_l"
+        name=MODEL_NAME, # "buffalo_l" | "buffalo_sc"
         providers=["CPUExecutionProvider"],
         allowed_modules=["detection", "recognition"]  # skip landmark_3d_68, landmark_2d_106, genderage
 )
