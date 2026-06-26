@@ -96,13 +96,22 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
+	var errs []error
+
 	if err := s.httpServer.Shutdown(ctx); err != nil {
-		return fmt.Errorf("failed to shutdown HTTP server: %w", err)
+		errs = append(errs, fmt.Errorf("failed to shutdown HTTP server: %w", err))
 	}
 
 	if err := s.DB.Close(); err != nil {
-		return fmt.Errorf("failed to close database connection: %w", err)
+		errs = append(errs, fmt.Errorf("failed to close database connection: %w", err))
 	}
 
+	if err := s.Redis.Close(); err != nil {
+		errs = append(errs, fmt.Errorf("failed to close database connection: %w", err))
+	}
+
+	if len(errs) > 0 {
+		return fmt.Errorf("shutdown errors: %v", errs)
+	}
 	return nil
 }

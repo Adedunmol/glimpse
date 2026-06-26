@@ -68,6 +68,11 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerConfig
 		return nil, fmt.Errorf("failed to parse database DSN: %w", err)
 	}
 
+	pgxPoolConfig.MaxConns = int32(cfg.Database.MaxOpenConns)
+	pgxPoolConfig.MinConns = int32(cfg.Database.MaxIdleConns)
+	pgxPoolConfig.MaxConnLifetime = time.Duration(cfg.Database.ConnMaxIdleTime) * time.Second
+	pgxPoolConfig.HealthCheckPeriod = time.Minute
+
 	if loggerService != nil && loggerService.GetApplication() != nil {
 		pgxPoolConfig.ConnConfig.Tracer = nrpgx5.NewTracer()
 	}
