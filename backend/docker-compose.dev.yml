@@ -19,7 +19,8 @@ services:
         condition: service_started
     volumes:
       - .:/app
-      - go-cache:/root/go/pkg/mod
+      - go-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
       - air-tmp:/app/tmp
     working_dir: /app
 
@@ -61,7 +62,7 @@ services:
     volumes:
       - seaweedfs_data:/data
     restart: unless-stopped
-  
+
   ml-worker:
     build:
       context: ../services/ml-worker
@@ -79,5 +80,6 @@ volumes:
   redis_data:
   seaweedfs_data:
   go-cache:
+  go-build-cache:
   air-tmp:
   insightface-models:
