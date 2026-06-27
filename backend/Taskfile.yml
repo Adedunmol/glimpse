@@ -10,6 +10,20 @@ tasks:
     - task --list-all
     silent: true
 
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+
+  lint:fix:
+    desc: Run golangci-lint with auto-fixes
+    cmds:
+      - golangci-lint run --fix ./...
+
+  test:
+    cmds:
+      - go test ./...
+
   confirm:
     desc: confirmation prompt
     cmds:
