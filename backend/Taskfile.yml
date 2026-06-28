@@ -23,6 +23,22 @@ tasks:
   test:
     cmds:
       - go test ./...
+  
+  test:cover:
+    desc: run tests with code coverage enabled
+    cmds:
+      - go test -cover ./...
+  
+  test:cover:profile:
+    desc: run tests and generate a code coverage output
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+  
+  test:cover:html:
+    desc: open the browser with the code coverage output
+    deps: [test:cover:profile]
+    cmds:
+      - go tool cover -html=coverage.out
 
   confirm:
     desc: confirmation prompt
