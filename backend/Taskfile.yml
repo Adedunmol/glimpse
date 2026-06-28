@@ -10,6 +10,66 @@ tasks:
     - task --list-all
     silent: true
 
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+
+  lint:fix:
+    desc: Run golangci-lint with auto-fixes
+    cmds:
+      - golangci-lint run --fix ./...
+
+  test:
+    cmds:
+      - go test ./...
+  
+  test:cover:
+    desc: run tests with code coverage enabled
+    cmds:
+      - go test -cover ./...
+  
+  test:cover:profile:
+    desc: run tests and generate a code coverage output
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+  
+  test:cover:html:
+    desc: open the browser with the code coverage output
+    deps: [test:cover:profile]
+    cmds:
+      - go tool cover -html=coverage.out
+
+  profile:cpu:web:
+    desc: display CPU profiling data in the browser
+    vars:
+      SECONDS: '{{.SECONDS | default "60"}}'
+    cmds:
+      - echo "The CPU profiling data is going to be for {{.SECONDS}} seconds"
+      - echo "Will open the browser after gathering profiling data..."
+      - go tool pprof -http=:8071 "http://localhost:6060/debug/pprof/profile?seconds={{.SECONDS}}"
+
+  profile:memory:web:
+    desc: display memory profiling data in the browser
+    cmds:
+      - echo "Will open the browser after gathering profiling data..."
+      - go tool pprof -http=:8070 "http://localhost:6060/debug/pprof/heap"
+
+  profile:cpu:
+    desc: display CPU profiling data in an interactive terminal
+    vars:
+      SECONDS: '{{.SECONDS | default "60"}}'
+    cmds:
+      - echo "The CPU profiling data is going to be for {{.SECONDS}} seconds"
+      - echo "Will open an interactive terminal after gathering profiling data..."
+      - go tool pprof "http://localhost:6060/debug/pprof/profile?seconds={{.SECONDS}}"
+
+  profile:memory:
+    desc: display memory profiling data in an interactive terminal
+    cmds:
+      - echo "Will open an interactive terminal after gathering profiling data..."
+      - go tool pprof "http://localhost:6060/debug/pprof/heap"
+
   confirm:
     desc: confirmation prompt
     cmds:
