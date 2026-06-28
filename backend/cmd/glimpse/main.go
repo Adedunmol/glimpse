@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
-
 	"time"
 
 	"github.com/Adedunmol/glimpse/internal/config"
@@ -28,6 +28,11 @@ func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		panic("failed to load config: " + err.Error())
+	}
+
+	// Enable viewing profiling data on the web
+	if cfg.Primary.Env == "local" || cfg.Primary.Env == "development" {
+		go http.ListenAndServe("0.0.0.0:6060", nil)
 	}
 
 	// Initialize New Relic logger service
