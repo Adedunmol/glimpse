@@ -40,6 +40,21 @@ tasks:
     cmds:
       - go tool cover -html=coverage.out
 
+  profile:cpu:
+    desc: display CPU profiling data in the browser
+    vars:
+      SECONDS: '{{.SECONDS | default "60"}}'
+    cmds:
+      - echo "The CPU profiling data is going to be for {{.SECONDS}} seconds"
+      - echo "Will open the browser after gathering profiling data..."
+      - go tool pprof -http=:8071 "http://localhost:6060/debug/pprof/profile?seconds={{.SECONDS}}"
+
+  profile:memory:
+    desc: display memory profiling data in the browser
+    cmds:
+      - echo "Will open the browser after gathering profiling data..."
+      - go tool pprof -http=:8070 "http://localhost:6060/debug/pprof/heap"
+
   confirm:
     desc: confirmation prompt
     cmds:
