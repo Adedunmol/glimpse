@@ -1,0 +1,26 @@
+{
+  "name": "@glimpse/db-studio",
+  "version": "1.0.0",
+  "description": "Package which handles the database studio functionality",
+  "type": "module",
+  "scripts": {
+    "dev": "drizzle-kit studio --port 4984",
+    "clean": "rimraf dist tsconfig.tsbuildinfo .turbo node_modules"
+  },
+  "exports": {
+    ".": {}
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.22.0"
+  }
+}
