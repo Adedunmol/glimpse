@@ -190,3 +190,46 @@ func (s *UploadService) CompletePhotosUpload(ctx echo.Context, userID string, pa
 
 	return nil
 }
+
+func (s *UploadService) CreateUploadWithFiles(ctx echo.Context, userID string, payload *upload.CreateUploadWithFilesPayload) (*upload.CreateUploadWithFilesResult, error) {
+	logger := middleware.GetLogger(ctx)
+	reqCtx := ctx.Request().Context()
+
+	// 1. Create the upload record, reusing the existing CreateUploadPayload shape
+	uploadItem, err := s.uploadRepo.CreateUpload(reqCtx, userID, &upload.CreateUploadPayload{
+		Name:      payload.Name,
+		ExpiresAt: payload.ExpiresAt,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to create upload")
+		return nil, err
+	}
+
+	// 2. Generate presigned URLs for each requested file
+	uploads := make([]photo.Upload, 0, len(payload.Files))
+	for _, file := range payload.Files {
+		key := fmt.Sprintf("users/%s/photos/%s%s", userID, uuid.New().String(), filepath.Ext(file.Name))
+
+		url, err := s.awsClient.S3.CreatePresignedUploadURL(reqCtx, s.server.Config.AWS.UploadBucket, key)
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to create presigned url")
+			return nil, err
+		}
+
+		uploads = append(uploads, photo.Upload{
+			Key: key,
+			Url: url,
+		})
+	}
+
+	logger.Info().
+		Str("event", "upload_created_with_files").
+		Str("upload_id", uploadItem.ID.String()).
+		Int("file_count", len(uploads)).
+		Msg("Upload created and presigned URLs generated in one call")
+
+	return &upload.CreateUploadWithFilesResult{
+		Upload:  uploadItem,
+		Uploads: uploads,
+	}, nil
+}

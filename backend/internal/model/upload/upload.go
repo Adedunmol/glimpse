@@ -29,3 +29,10 @@ type PopulatedUpload struct {
 	Upload
 	Photos []photo.Photo `json:"photos" db:"photos"`
 }
+
+// ----------------------------------------------------------------------------------------------
+
+type CreateUploadWithFilesResult struct {
+	Upload  *Upload        `json:"upload"`
+	Uploads []photo.Upload `json:"uploads"`
+}

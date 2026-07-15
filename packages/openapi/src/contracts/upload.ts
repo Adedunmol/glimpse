@@ -1,5 +1,5 @@
 import { getSecurityMetadata } from "@/utils.js";
-import {schemaWithPagination, ZPresignedUrls, ZUpload} from "@glimpse/zod";
+import {schemaWithPagination, ZPresignedUrls, ZUpload, ZCreateUploadWithFilesInput, ZCreateUploadWithFilesResult} from "@glimpse/zod";
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 
@@ -111,6 +111,17 @@ export const uploadContract = c.router(
             204: z.void(),
         },
         metadata: metadata,
+        },
+        createUploadWithFiles: {
+            summary: "Create upload with files",
+            path: "/uploads/with-files",
+            method: "POST",
+            description: "Creates a new upload and generates presigned urls for each requested file in a single call, combining what createUpload and getPresignedUrls do separately",
+            body: ZCreateUploadWithFilesInput,
+            responses: {
+                201: ZCreateUploadWithFilesResult,
+            },
+            metadata: metadata,
         },
     },
     {

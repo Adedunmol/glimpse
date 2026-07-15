@@ -96,3 +96,19 @@ func (p *DeleteUploadPayload) Validate() error {
 	validate := validator.New()
 	return validate.Struct(p)
 }
+
+// -----------------------------------------------------------------------------------------------
+type CreateUploadWithFilesPayload struct {
+	Name      string      `json:"name" validate:"required,min=1,max=255"`
+	ExpiresAt *time.Time  `json:"expiresAt"`
+	Files     []FileInput `json:"files" validate:"required,min=1,max=50,dive"`
+}
+
+type FileInput struct {
+	Name string `json:"name" validate:"required,min=1,max=255"`
+}
+
+func (p *CreateUploadWithFilesPayload) Validate() error {
+	validate := validator.New()
+	return validate.Struct(p)
+}

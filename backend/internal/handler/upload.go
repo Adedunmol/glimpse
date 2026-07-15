@@ -108,3 +108,15 @@ func (h *UploadHandler) CompleteUpload(c echo.Context) error {
 		&photo.CompletePhotosPayload{},
 	)(c)
 }
+
+func (h *UploadHandler) CreateUploadWithFiles(c echo.Context) error {
+	return Handle(
+		h.Handler,
+		func(c echo.Context, payload *upload.CreateUploadWithFilesPayload) (*upload.CreateUploadWithFilesResult, error) {
+			userID := middleware.GetUserID(c)
+			return h.uploadService.CreateUploadWithFiles(c, userID, payload)
+		},
+		http.StatusCreated,
+		&upload.CreateUploadWithFilesPayload{},
+	)(c)
+}

@@ -12,6 +12,7 @@ func registerUploadRoutes(r *echo.Group, h *handler.UploadHandler, auth *middlew
 	uploads.Use(auth.RequireAuth)
 
 	uploads.POST("", h.CreateUpload)
+	uploads.POST("/with-files", h.CreateUploadWithFiles)
 	uploads.GET("", h.GetUploads)
 
 	dynamicUpload := uploads.Group("/:uploadId")

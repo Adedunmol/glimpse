@@ -28,3 +28,19 @@ export const ZPresignedUrls =  z.object({
         url: z.string().url()
     }))
 })
+
+export const ZCreateUploadWithFilesInput = z.object({
+    name: z.string().min(1).max(255),
+    expiresAt: z.string().optional(),
+    files: z.array(z.object({
+        name: z.string().min(1).max(255)
+    })).min(1).max(50)
+});
+
+export const ZCreateUploadWithFilesResult = z.object({
+    upload: ZUpload.omit({ photos: true }),
+    uploads: z.array(z.object({
+        key: z.string(),
+        url: z.string().url()
+    }))
+});
