@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -28,8 +29,7 @@ func (c CustomValidationErrors) Error() string {
 
 func BindAndValidate(c echo.Context, payload Validatable) error {
 	if err := c.Bind(payload); err != nil {
-		message := strings.Split(strings.Split(err.Error(), ",")[1], "message=")[1]
-		return errs.NewBadRequestError(message, false, nil, nil, nil)
+		return errs.NewBadRequestError(bindErrorMessage(err), false, nil, nil, nil)
 	}
 
 	if msg, fieldErrors := validateStruct(payload); fieldErrors != nil {
@@ -37,6 +37,21 @@ func BindAndValidate(c echo.Context, payload Validatable) error {
 	}
 
 	return nil
+}
+
+// bindErrorMessage pulls the readable message out of a bind failure. Echo wraps
+// these as *echo.HTTPError whose Message carries the full detail - including the
+// offending field and its actual type - so read it directly rather than slicing
+// up the formatted error string, which drops everything after the first comma.
+func bindErrorMessage(err error) string {
+	var httpErr *echo.HTTPError
+	if errors.As(err, &httpErr) {
+		if msg, ok := httpErr.Message.(string); ok {
+			return msg
+		}
+		return fmt.Sprintf("%v", httpErr.Message)
+	}
+	return err.Error()
 }
 
 func validateStruct(v Validatable) (string, []errs.FieldError) {

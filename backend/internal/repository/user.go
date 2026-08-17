@@ -60,10 +60,10 @@ func (p *PostgresUserRepository) GetUserByID(ctx context.Context, userID string)
 			FROM
 				users
 			WHERE
-				user_id=@userID
+				clerk_user_id=@userID
 	`
 	rows, err := p.server.DB.Pool.Query(ctx, stmt, pgx.NamedArgs{
-		"email": userID,
+		"userID": userID,
 	})
 
 	if err != nil {
@@ -81,17 +81,17 @@ func (p *PostgresUserRepository) GetUserByID(ctx context.Context, userID string)
 func (p *PostgresUserRepository) CreateUser(ctx context.Context, email, clerkId string) (*user.User, error) {
 	stmt := `
 		INSERT INTO
-			users (user_id, email, created_at, updated_at)
+			users (clerk_user_id, email)
 		VALUES
 			(
-				@user_id, @email
+				@clerk_user_id, @email
 			)
 		RETURNING
 			*
 	`
 	rows, err := p.server.DB.Pool.Query(ctx, stmt, pgx.NamedArgs{
-		"user_id": clerkId,
-		"email":   email,
+		"clerk_user_id": clerkId,
+		"email":         email,
 	})
 
 	if err != nil {
@@ -108,7 +108,7 @@ func (p *PostgresUserRepository) CreateUser(ctx context.Context, email, clerkId 
 
 func (p *PostgresUserRepository) DeleteUser(ctx context.Context, userId string) error {
 	result, err := p.server.DB.Pool.Exec(ctx, `
-		DELETE FROM users WHERE user_id = @id
+		DELETE FROM users WHERE clerk_user_id = @id
 	`, pgx.NamedArgs{
 		"id": userId,
 	})
