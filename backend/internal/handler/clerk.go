@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/Adedunmol/glimpse/internal/middleware"
@@ -37,25 +35,19 @@ func (h *ClerkWebHookHandler) HandleEvent(c echo.Context) error {
 	return Handle(
 		h.Handler,
 
-		func(c echo.Context, _ *user.ClerkEventPayload) (any, error) {
+		func(c echo.Context, payload *user.ClerkEventPayload) (any, error) {
 			logger := middleware.GetLogger(c)
-			raw, err := io.ReadAll(c.Request().Body)
-			if err != nil {
-				return nil, echo.NewHTTPError(http.StatusBadRequest, "failed to read body")
-			}
 
-			c.Request().Body = io.NopCloser(bytes.NewBuffer(raw))
+			raw := middleware.GetRawBody(c)
+			if raw == nil {
+				logger.Error().Msg("raw body unavailable; CaptureRawBody middleware is not registered on this route")
+				return nil, echo.NewHTTPError(http.StatusInternalServerError, "cannot verify webhook")
+			}
 
 			headers := c.Request().Header
-			if err = h.wh.Verify(raw, headers); err != nil {
+			if err := h.wh.Verify(raw, headers); err != nil {
 				logger.Error().Err(err).Msg("failed to verify webhook signature")
 				return nil, echo.NewHTTPError(http.StatusBadRequest, "Invalid webhook signature")
-			}
-
-			var payload user.ClerkEventPayload
-			if err = json.Unmarshal(raw, &payload); err != nil {
-				logger.Error().Err(err).Msg("error decoding raw payload")
-				return nil, echo.NewHTTPError(http.StatusUnprocessableEntity, "malformed json")
 			}
 
 			logger.Info().
