@@ -10,8 +10,8 @@ type ClerkEventPayload struct {
 	Data       json.RawMessage `json:"data" validate:"required"`
 	Object     string          `json:"object" validate:"required"`
 	EventType  string          `json:"type" validate:"required"`
-	TimeStamp  string          `json:"timestamp" validate:"required"`
-	InstanceID string          `json:"instance_id" validate:"required"`
+	TimeStamp  int64           `json:"timestamp" validate:"required"` // Unix milliseconds
+	InstanceID string          `json:"instance_id"`
 }
 
 func (p *ClerkEventPayload) Validate() error {
