@@ -7,7 +7,5 @@ import (
 )
 
 func registerDeviceRoutes(r *echo.Echo, h *handler.Handlers, auth *middleware.AuthMiddleware) {
-	devices := r.Group("/devices")
-	devices.Use(auth.RequireAuth)
-	r.POST("/register", h.Device.RegisterDevice)
+	r.POST("/register", h.Device.RegisterDevice, auth.RequireAuth)
 }
