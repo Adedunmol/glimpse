@@ -23,7 +23,7 @@ func (p *CreateUploadPayload) Validate() error {
 // ----------------------------------------------------------------------------------------------
 
 type UpdateUploadPayload struct {
-	ID   uuid.UUID `param:"id" validate:"required,uuid"`
+	ID   uuid.UUID `param:"uploadId" validate:"required,uuid"`
 	Name *string   `json:"name" validate:"omitempty,min=1,max=255"`
 	// Status    *Status    `json:"status" validate:"omitempty,oneof=pending processing done failed"`
 	ExpiresAt *time.Time `json:"expiresAt"`
@@ -37,7 +37,7 @@ func (p *UpdateUploadPayload) Validate() error {
 // ----------------------------------------------------------------------------------------------
 
 type GetUploadByIDPayload struct {
-	ID uuid.UUID `param:"id" validate:"required,uuid"`
+	ID uuid.UUID `param:"uploadId" validate:"required,uuid"`
 }
 
 func (p *GetUploadByIDPayload) Validate() error {
@@ -89,7 +89,7 @@ func (q *GetUploadsQuery) Validate() error {
 // ----------------------------------------------------------------------------------------------
 
 type DeleteUploadPayload struct {
-	ID uuid.UUID `param:"id" validate:"required,uuid"`
+	ID uuid.UUID `param:"uploadId" validate:"required,uuid"`
 }
 
 func (p *DeleteUploadPayload) Validate() error {

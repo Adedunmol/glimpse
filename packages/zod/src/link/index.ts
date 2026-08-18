@@ -5,9 +5,9 @@ export const ZLink = z.object({
   clusterId: z.string().uuid(),
   token: z.string(),
   isPasswordProtected: z.boolean(),
-  passwordHash: z.string(),
+  passwordHash: z.string().nullable(),
   expiresAt: z.string(),
-  isActive: z.string(),
+  isActive: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })

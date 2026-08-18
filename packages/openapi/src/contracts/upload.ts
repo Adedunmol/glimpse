@@ -46,7 +46,7 @@ export const uploadContract = c.router(
 
         getUploadById: {
         summary: "Get upload by ID",
-        path: "/uploads/:id",
+        path: "/uploads/:uploadId",
         method: "GET",
         description: "Get upload by ID with associated photos",
         responses: {
@@ -57,7 +57,7 @@ export const uploadContract = c.router(
 
         updateUpload: {
         summary: "Update upload",
-        path: "/uploads/:id",
+        path: "/uploads/:uploadId",
         method: "PATCH",
         description: "Update upload",
         body: ZUpload.pick({
@@ -72,7 +72,7 @@ export const uploadContract = c.router(
 
         deleteUpload: {
         summary: "Delete upload",
-        path: "/uploads/:id",
+        path: "/uploads/:uploadId",
         method: "DELETE",
         description: "Delete upload",
         responses: {
@@ -83,7 +83,7 @@ export const uploadContract = c.router(
 
         getPresignedUrls: {
             summary: "Get presigned urls",
-            path: "/uploads/:id/photos",
+            path: "/uploads/:uploadId/photos",
             method: "POST",
             description: "This endpoint takes in a list of the images to be uploaded with the upload id and generates a presigned url for each of the photo in the payload",
             body: z.object({
@@ -99,7 +99,7 @@ export const uploadContract = c.router(
 
         completeUpload: {
         summary: "Complete upload",
-        path: "/uploads/:id/complete",
+        path: "/uploads/:uploadId/complete",
         method: "POST",
         description: "This endpoint takes in a list of pictures that have been successfully uploaded to S3 by the client and creates records for them in the database and also kickstart the processing flow",
         body: z.object({
@@ -114,6 +114,6 @@ export const uploadContract = c.router(
         },
     },
     {
-        pathPrefix: "/v1"
+        pathPrefix: "/api/v1"
     }
 )

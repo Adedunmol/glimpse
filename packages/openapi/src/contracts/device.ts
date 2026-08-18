@@ -9,15 +9,15 @@ const metadata = getSecurityMetadata();
 
 export const deviceContract = c.router(
   {
-    createDevice: {
-      summary: "create a new user device",
-      path: "/device/create",
+    registerDevice: {
+      summary: "Register a user device",
+      path: "/register",
       method: "POST",
-      description:"create a new user device",
-      body: ZUserDevice.pick({
-        pushToken: true,
-        platform: true
-      }).partial(),
+      description: "Registers a device for push notifications against the calling user",
+      body: z.object({
+        deviceToken: z.string().min(1),
+        platform: z.string().min(1),
+      }),
       responses: {
         201: ZUserDevice,
       },

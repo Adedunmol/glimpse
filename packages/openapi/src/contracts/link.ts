@@ -7,6 +7,14 @@ const c = initContract();
 
 const metadata = getSecurityMetadata();
 
+const paginationQuery = z.object({
+  page: z.number().min(1).optional(),
+  limit: z.number().min(1).max(100).optional(),
+  sort: z.enum(["created_at", "updated_at", "name"]).optional(),
+  order: z.enum(["asc", "desc"]).optional(),
+  search: z.string().min(1).optional(),
+});
+
 export const linkContract = c.router(
   {
     getLinks: {
@@ -14,13 +22,7 @@ export const linkContract = c.router(
       path: "/links",
       method: "GET",
       description: "Get all links",
-      query: z.object({
-        page: z.number().min(1).optional(),
-        limit: z.number().min(1).max(100).optional(),
-        sort: z.enum(["created_at", "updated_at", "name"]).optional(),
-        order: z.enum(["asc", "desc"]).optional(),
-        search: z.string().min(1).optional(),
-      }),
+      query: paginationQuery,
       responses: {
         200: schemaWithPagination(ZLink)
       },
@@ -29,20 +31,9 @@ export const linkContract = c.router(
 
     getLinkById: {
     summary: "Get link by ID",
-    path: "/clusters/:linkId",
+    path: "/links/id/:linkId",
     method: "GET",
-    description: "Get link by ID",
-    responses: {
-        200: ZLink,
-    },
-    metadata: metadata,
-    },
-
-    getLinkByClusterId: {
-    summary: "Get link by cluster ID",
-    path: "/clusters/:clusterId",
-    method: "GET",
-    description: "Get link by cluster ID",
+    description: "Get a single link by its id",
     responses: {
         200: ZLink,
     },
@@ -51,13 +42,28 @@ export const linkContract = c.router(
 
     getLinkByToken: {
     summary: "Get link by token",
-    path: "/clusters/:token",
+    path: "/links/token/:token",
     method: "GET",
-    description: "Get link by token",
+    description: "Get a single link by its share token",
     responses: {
         200: ZLink,
     },
     metadata: metadata,
+    },
+
+    getLinksByClusterId: {
+    summary: "Get links by cluster ID",
+    path: "/links/:clusterId",
+    method: "GET",
+    description: "Get the links belonging to a cluster",
+    query: paginationQuery,
+    responses: {
+        200: schemaWithPagination(ZLink),
+    },
+    metadata: metadata,
     }
+  },
+  {
+    pathPrefix: "/api/v1"
   }
 )

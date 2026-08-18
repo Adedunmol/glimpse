@@ -1,5 +1,5 @@
 import { getSecurityMetadata } from "@/utils.js";
-import {schemaWithPagination, ZCluster} from "@glimpse/zod";
+import {schemaWithPagination, ZCluster, ZLink} from "@glimpse/zod";
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 
@@ -36,6 +36,24 @@ export const clusterContract = c.router(
         200: ZCluster,
     },
     metadata: metadata,
+    },
+
+    createClusterLink: {
+    summary: "Create a share link for a cluster",
+    path: "/clusters/:clusterId/links",
+    method: "POST",
+    description: "Creates a shareable link for the given cluster. Supplying a password makes the link password protected.",
+    body: z.object({
+        password: z.string().min(6).optional(),
+        expiresAt: z.string().datetime().nullish(),
+    }),
+    responses: {
+        201: ZLink,
+    },
+    metadata: metadata,
     }
+  },
+  {
+    pathPrefix: "/api/v1"
   }
 )
