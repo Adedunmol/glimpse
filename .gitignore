@@ -62,3 +62,4 @@ glimpse.exe
 # Python related
 **/__pycache__/
 .venv
+secret/
