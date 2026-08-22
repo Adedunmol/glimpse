@@ -56,15 +56,19 @@ func main() {
 	// Initialize repositories, services, and handlers
 	fcmClient, err := fcm.NewFCMClient(cfg.FCM.CredentialPath, cfg.FCM.ProjectID)
 	if err != nil {
-		log.Warn().Msgf("failed to initialize fcm client: %s", err)
+		// startup continues, but every notification will fail until this is
+		// fixed, so make the reason loud rather than a single warning line
+		log.Error().
+			Err(err).
+			Str("credential_path", cfg.FCM.CredentialPath).
+			Msg("failed to initialize fcm client: push notifications are DISABLED")
 		fcmClient = nil
-		//continue startup
 	}
 	deviceRepo := notification.NewDeviceRepository(srv.DB.Pool)
 	repos := repository.NewRepositories(srv, deviceRepo)
 
 	deviceService := notification.NewDeviceService(deviceRepo)
-	notificationService := notification.NewNotificationService(deviceRepo, fcmClient)
+	notificationService := notification.NewNotificationService(srv.Logger, deviceRepo, fcmClient)
 	jobService := job.NewJobService(srv.Logger, cfg, srv.DB.Pool, srv.Redis, notificationService, cfg.Redis.StreamName)
 
 	services, serviceErr := service.NewServices(srv, repos, deviceService, jobService)
